@@ -126,3 +126,11 @@ specific language governing permissions and limitations under the License.
 ## Disclaimer
 
 This is not an official Google product.
+
+## Research Objectives
+
+    * Gather image dataset
+    * Decide on encoding, vocabulary and image data concat.
+    * Decide on image transformer architecture
+    * Decide where to feed from image transformer
+    * Build image block

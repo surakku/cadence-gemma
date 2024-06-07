@@ -47,7 +47,7 @@ _PATH_TOKENIZER = flags.DEFINE_string(
 )
 _TOTAL_GENERATION_STEPS = flags.DEFINE_integer(
     "total_sampling_steps",
-    128,
+    500,
     help="Maximum number of step to run when decoding.",
 )
 _STRING_TO_SAMPLE = flags.DEFINE_string(
@@ -65,7 +65,8 @@ def _load_and_sample(
     total_generation_steps: int,
 ) -> None:
   """Loads and samples a string from a checkpoint."""
-  device = "cuda" if torch.cuda.is_available() else "cpu"
+#   device = "cuda" if torch.cuda.is_available() else "cpu"
+  device = torch.device('cuda:1')
   print(f"Loading the parameters from {path_checkpoint}")
   parameters = torch.load(path_checkpoint)
   parameters = {k: v.to(device=device) for k, v in parameters.items()}
