@@ -185,7 +185,7 @@ class MLP(nn.Module):
     def __init__(self, in_features, hidden_features, out_features, p=0.):
         super().__init__()
         self.fc1 = nn.Linear(in_features, hidden_features)
-        self.act = nn.GELU
+        self.act = nn.GELU()
         self.fc2 = nn.Linear(hidden_features, out_features)
         self.drop = nn.Dropout(p)
     
@@ -392,14 +392,13 @@ class VisionTransformer(nn.Module):
         -------
         logits: torch.Tensor
             Logits over all the classes. (n_samples, n_classes)."""
-        
-        n_samples = x.shape(0)
+        n_samples = x.shape[0]
         x = self.patch_embed(x)
         
         cls_token = self.cls_token.expand(
             n_samples, -1, -1
         ) # (n_samples, 1, embed_dim)
-        x = torch.cat(cls_token, x, dim=1) # (n_samples, 1 + n_patches, embed_dim)
+        x = torch.cat((cls_token, x), dim=1) # (n_samples, 1 + n_patches, embed_dim)
         x = x + self.pos_embed # (n_samples, 1 + n_patches, embed_dim)
         x = self.pos_drop(x)
         
