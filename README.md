@@ -1,8 +1,10 @@
-# RecurrentGemma
+# CadenceGemma
 
-RecurrentGemma is a family of open-weights Language Models by [Google DeepMind](https://deepmind.google/), based on the novel [Griffin architecture](https://arxiv.org/abs/2402.19427). This architecture achieves fast inference when generating long sequences by replacing global attention with a mixture of local attention and linear recurrences.
+CadenceGemma is a semi-novel multimodal architecure built upon [RecurrentGemma](https://github.com/google-deepmind/recurrentgemma). RecurrentGemma makes use of the novel [Griffin architecture](https://arxiv.org/abs/2402.19427), consisting of a hybrid state-space making use of local attention and linear recurrances.
 
-This repository contains the model implementation and examples for sampling and fine-tuning. We recommend most users adopt the [Flax](https://github.com/google/flax) implementation, which is highly optimized. We also provide an un-optimized [PyTorch](https://github.com/pytorch/pytorch) implementation for reference.
+Cadence builds upon RecurrentGemma in a way similar to [Cobra](https://arxiv.org/abs/2403.14520) with Mamba, by introducing a combined vision encoder and projector in order to combine modalities in a shared semantic space. RecurrentGemma is then fine tuned to interperet the projected visual tokens.
+
+Disclaimer - This is ongoing research and is still in it's infancy. The architecture is being finished and training will begin soon.
 
 ### Learn more about RecurrentGemma
 
@@ -127,10 +129,3 @@ specific language governing permissions and limitations under the License.
 
 This is not an official Google product.
 
-## Research Objectives
-
-    * Gather image dataset
-    * Decide on encoding, vocabulary and image data concat.
-    * Decide on image transformer architecture
-    * Decide where to feed from image transformer
-    * Build image block
