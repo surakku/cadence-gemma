@@ -969,6 +969,7 @@ class Embedder(nn.Module):
     self.vocab_size = vocab_size
     self.embed_dim = embed_dim
     self.scale_by_sqrt_dim = scale_by_sqrt_dim
+    print(embed_dim)
 
     # Parameters.
     self.input_embedding = nn.Parameter(

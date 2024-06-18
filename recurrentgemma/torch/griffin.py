@@ -15,6 +15,8 @@
 """Griffin model."""
 from typing import Literal, overload
 
+from IPython import embed
+
 from recurrentgemma import common
 from recurrentgemma.torch import array_typing as at
 from recurrentgemma.torch import layers

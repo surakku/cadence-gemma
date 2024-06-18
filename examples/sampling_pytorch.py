@@ -76,7 +76,7 @@ def _load_and_sample(
   vocab.Load(path_tokenizer)
   config = recurrentgemma.GriffinConfig.from_torch_params(
       params,
-      preset=recurrentgemma.Preset.RECURRENT_GEMMA_2B_V1,
+      # preset=recurrentgemma.Preset.RECURRENT_GEMMA_2B_V1,
   )
   model = recurrentgemma.Griffin(config, device=device, dtype=torch.bfloat16)
   model.load_state_dict(params)
