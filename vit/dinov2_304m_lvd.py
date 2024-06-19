@@ -32,8 +32,8 @@ print(f"Raw: {output.shape}")
 # output is a (1, num_features) shaped tensor   
 
 
-img1 = Image.open("car2.jpg")
-img2 = Image.open("cart2.jpg")
+img1 = Image.open("./img_tests/car2.jpg")
+img2 = Image.open("./img_tests/cart2.jpg")
 
 out1 = model(transforms(img1).unsqueeze(0))
 out2 = model(transforms(img2).unsqueeze(0))

@@ -1,1 +1,1 @@
-from projector import c_abs
+from .mlp import MLPProjector

@@ -1,1 +1,1 @@
-from vit import dino_siglip
+from .dino_siglip import VisionEncoder

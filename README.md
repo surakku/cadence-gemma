@@ -107,14 +107,8 @@ RecurrentGemma code can run on CPU, GPU or TPU.
 The code has been optimized for running on TPU using the Flax implementation,
 which contains a low level [Pallas](https://jax.readthedocs.io/en/latest/pallas/index.html) kernel to perform the linear scan in the recurrent layers.
 
-## Contributing
-
-We are open to bug reports and issues. Please see
-[CONTRIBUTING.md](CONTRIBUTING.md) for details on PRs.
 
 ## License
-
-Copyright 2024 DeepMind Technologies Limited
 
 This code is licensed under the Apache License, Version 2.0 (the \"License\");
 you may not use this file except in compliance with the License. You may obtain
