@@ -15,15 +15,17 @@
 """Griffin model."""
 from typing import Literal, overload
 
-from IPython import embed
 
 from recurrentgemma import common
 from recurrentgemma.torch import array_typing as at
 from recurrentgemma.torch import layers
 from recurrentgemma.torch import modules
 import torch
-from torch import nn
+from torch import bfloat16, nn
 from torch.utils import checkpoint
+
+from ..vit import VisionEncoder
+from ..projector import MLPProjector
 
 
 Cache = dict[str, modules.ResidualBlockCache]
@@ -52,6 +54,11 @@ class Griffin(nn.Module):
     super().__init__()
     self.config = config
     self.gradient_checkpointing = gradient_checkpointing
+    print("\n\nGRIFFIN\n\n")
+    
+    self.vis_encoder = VisionEncoder()
+    
+    self.projector = MLPProjector()
 
     self.embedder = modules.Embedder(
         vocab_size=self.config.vocab_size,
@@ -155,9 +162,15 @@ class Griffin(nn.Module):
     """
     if not return_logits and not return_cache:
       return None, None
-
     input_emb = self.embedder.encode(tokens)
     x = input_emb
+    # print(x.shape)
+    # dog = self.vis_encoder("/homes/jkobza/projects/recurrentgemma_experiments/recurrentgemma/vit/img_tests/dog.jpg")
+    # dog = self.projector(dog).to(bfloat16)
+    # dog = dog[None, :, :]
+    # print(dog.shape)
+    # x = torch.cat((x, dog))
+    ## TODO THIS IS WHERE VISION ENCODER AND MLP GET CALLED
 
     new_cache = {}
     for i, block in enumerate(self.blocks):

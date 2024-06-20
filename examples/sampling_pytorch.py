@@ -30,6 +30,7 @@ python sampling_pytorch.py --path_checkpoint=${PATH_TO_THE_GEMMA_CHECKPOINT} \
     --path_tokenizer=${PATH_TO_THE_GEMMA_TOKENIZER} \
     --string_to_sample="Where is Paris?"
 """
+from email.policy import strict
 from typing import Sequence
 
 from absl import app
@@ -76,10 +77,10 @@ def _load_and_sample(
   vocab.Load(path_tokenizer)
   config = recurrentgemma.GriffinConfig.from_torch_params(
       params,
-      # preset=recurrentgemma.Preset.RECURRENT_GEMMA_2B_V1,
+      preset=recurrentgemma.Preset.RECURRENT_GEMMA_2B_V1,
   )
   model = recurrentgemma.Griffin(config, device=device, dtype=torch.bfloat16)
-  model.load_state_dict(params)
+  model.load_state_dict(params, strict=False)
   sampler = recurrentgemma.Sampler(model=model, vocab=vocab)
   sampler_output = sampler(
       input_strings=[input_string],

@@ -396,7 +396,7 @@ class Sampler:
     padded_tokens = self._get_padded_tokens(all_input_ids)
     _, pad_length = padded_tokens.shape
     pad_lengths = pad_length - input_lengths
-
+    ## THE IMAGE PROCESSOR WILL HAVE TO HAPPEN HERE
     # Prefill processing stage.
     sampling_state = self._prompt_processing_fn(
         padded_tokens,

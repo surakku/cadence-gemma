@@ -15,3 +15,4 @@
 """RecurrentGemma public library."""
 
 __version__ = "0.1.0"
+from torch import *
