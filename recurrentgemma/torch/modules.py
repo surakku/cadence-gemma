@@ -897,6 +897,7 @@ class ResidualBlock(nn.Module):
     raw_x = x
 
     inputs_normalized = self.temporal_pre_norm(raw_x)
+    print("\n\nNORM\n\n",inputs_normalized)
     x, cache = self.temporal_block(
         inputs_normalized, segment_pos, cache, return_cache=return_cache
     )

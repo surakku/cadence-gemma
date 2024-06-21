@@ -230,6 +230,7 @@ class Sampler:
     """Pre-processes the prompt."""
     factory_kwargs = dict(device=self.device, dtype=torch.int32)
     batch_size, prompt_length = tokens.shape
+    prompt_length+=1
 
     # Make all positions to end with the corresponding sequence `length - 1`.
     positions = torch.arange(prompt_length, **factory_kwargs)
@@ -387,12 +388,17 @@ class Sampler:
       raise ValueError("total_generation_steps must be at least 0.")
 
     # Create a batched array from inputs.
+    print("\n\nINPUT STRINGS")
+    print(input_strings)
     all_input_ids = [self.tokenize(x) for x in input_strings]
+    print("\n\nTOKENS\n\n")
+    print(all_input_ids)
     input_lengths = torch.tensor(
         [len(input_ids) for input_ids in all_input_ids],
         device=self.device,
         dtype=torch.int32,
-    )
+    ) + 1
+    print(input_lengths)
     padded_tokens = self._get_padded_tokens(all_input_ids)
     _, pad_length = padded_tokens.shape
     pad_lengths = pad_length - input_lengths
@@ -405,7 +411,6 @@ class Sampler:
         return_logits,
         echo,
     )
-
     # Sampling stage.
     if total_generation_steps > 1:
       sampling_state = self._sample_fn(
