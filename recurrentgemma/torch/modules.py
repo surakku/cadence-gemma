@@ -897,7 +897,6 @@ class ResidualBlock(nn.Module):
     raw_x = x
 
     inputs_normalized = self.temporal_pre_norm(raw_x)
-    print("\n\nNORM\n\n",inputs_normalized)
     x, cache = self.temporal_block(
         inputs_normalized, segment_pos, cache, return_cache=return_cache
     )
@@ -970,7 +969,6 @@ class Embedder(nn.Module):
     self.vocab_size = vocab_size
     self.embed_dim = embed_dim
     self.scale_by_sqrt_dim = scale_by_sqrt_dim
-    print(embed_dim)
 
     # Parameters.
     self.input_embedding = nn.Parameter(

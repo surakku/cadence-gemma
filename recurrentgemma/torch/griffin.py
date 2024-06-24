@@ -145,6 +145,7 @@ class Griffin(nn.Module):
       cache: Cache | None = None,
       return_logits: bool = True,
       return_cache: bool = True,
+      img_path: str | None = None
   ) -> tuple[at.TokenLogits | None, Cache | None]:
     """Calls Griffin.
 
@@ -163,22 +164,16 @@ class Griffin(nn.Module):
     if not return_logits and not return_cache:
       return None, None
     input_emb = self.embedder.encode(tokens)
-    print(f"Token shape {input_emb.shape}")
     x = input_emb
-    # print(x.shape)
-    dog = self.vis_encoder("/homes/jkobza/projects/recurrentgemma_experiments/recurrentgemma/vit/img_tests/dog.jpg")
-    dog = self.projector(dog).to(bfloat16)
-    dog = dog[None, :, :]
-    # print(dog.shape)
-    # x = torch.cat((x, dog))
-    ## TODO THIS IS WHERE VISION ENCODER AND MLP GET CALLED
-    
-    # print(x.shape)
-    # print(dog.shape)
+
+
     if 0 in segment_pos:
+        dog = self.vis_encoder(img_path)
+        dog = self.projector(dog).to(bfloat16)
+        dog = dog[None, :, :]
         x = torch.cat([x[:, :1, :], dog, x[:, 1:, :]], dim=1)
-    # segment_pos+=1
-    # print(x.shape)
+
+
     new_cache = {}
     for i, block in enumerate(self.blocks):
       block_name = f"blocks.{i}"

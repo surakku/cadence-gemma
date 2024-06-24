@@ -91,6 +91,10 @@ class Sampler:
     self.greedy_sampling = greedy_sampling
     self._eos_token = torch.tensor([self.vocab.eos_id()], device=self.device)
     self._is_it_model = is_it_model
+    
+    for name, param in model.named_parameters():
+      if param.requires_grad:
+          print (name)
 
   @property
   def dtype(self) -> torch.dtype:
@@ -112,6 +116,7 @@ class Sampler:
       cache: Cache | None = None,
       return_logits: bool = True,
       return_cache: bool = True,
+      img_path: str = ""
   ) -> tuple[at.TokenLogits | None, Cache | None]:
     return self.model(
         tokens=tokens,
@@ -119,6 +124,7 @@ class Sampler:
         cache=cache,
         return_logits=return_logits,
         return_cache=return_cache,
+        img_path=img_path
     )
 
   @at.typed
@@ -226,6 +232,7 @@ class Sampler:
       total_generation_steps: int,
       return_logits: bool,
       echo: bool,
+      img_path: str
   ) -> SamplingState:
     """Pre-processes the prompt."""
     factory_kwargs = dict(device=self.device, dtype=torch.int32)
@@ -247,6 +254,7 @@ class Sampler:
           cache=None,
           return_logits=return_logits and echo,
           return_cache=False,
+          img_path=img_path
       )
       logits = None
 
@@ -258,6 +266,7 @@ class Sampler:
           cache=None,
           return_logits=return_logits,
           return_cache=True,
+          img_path=img_path
       )
       prev_logits = logits[:, :0]
 
@@ -270,6 +279,7 @@ class Sampler:
           cache=None,
           return_logits=return_logits and echo,
           return_cache=True,
+          img_path=img_path
       )
       # Process the last token for logits
       logits, cache = self.apply_model(
@@ -278,6 +288,7 @@ class Sampler:
           cache=cache,
           return_logits=True,
           return_cache=total_generation_steps > 1,
+          img_path=img_path
       )
 
     # Tokens buffer for samples.
@@ -369,6 +380,7 @@ class Sampler:
       echo: bool = False,
       return_logits: bool = False,
       end_sampling_at_eos_token: bool = True,
+      img_path: str | None = None
   ) -> SamplerOutput:
     """Samples a completion of the input string.
 
@@ -388,17 +400,13 @@ class Sampler:
       raise ValueError("total_generation_steps must be at least 0.")
 
     # Create a batched array from inputs.
-    print("\n\nINPUT STRINGS")
-    print(input_strings)
     all_input_ids = [self.tokenize(x) for x in input_strings]
-    print("\n\nTOKENS\n\n")
-    print(all_input_ids)
+
     input_lengths = torch.tensor(
         [len(input_ids) for input_ids in all_input_ids],
         device=self.device,
         dtype=torch.int32,
     ) + 1
-    print(input_lengths)
     padded_tokens = self._get_padded_tokens(all_input_ids)
     _, pad_length = padded_tokens.shape
     pad_lengths = pad_length - input_lengths
@@ -410,6 +418,7 @@ class Sampler:
         total_generation_steps,
         return_logits,
         echo,
+        img_path=img_path
     )
     # Sampling stage.
     if total_generation_steps > 1:

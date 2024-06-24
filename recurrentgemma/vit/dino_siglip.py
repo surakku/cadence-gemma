@@ -109,6 +109,12 @@ class VisionEncoder(nn.Module):
             ]
         )
         
+        for param in self.dino.parameters():
+            param.requires_grad = False
+        
+        for param in self.siglip.parameters():
+            param.requires_grad = False
+            
 
     def forward(self, img_path):
         """Run the forward pass.

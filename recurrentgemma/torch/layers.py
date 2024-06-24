@@ -545,7 +545,6 @@ class Conv1D(nn.Module):
       (shape: [batch_size, temporal_width, width]).
     """
     b, num_tokens, d = x.shape
-    print(x)
     assert cache.shape == (b, self.temporal_width - 1, d)
     assert num_tokens == 1
     return torch.concatenate([cache.type(x.dtype), x], dim=1)
@@ -604,7 +603,6 @@ class Conv1D(nn.Module):
     for shift in range(1, max_look_ahead + 1):
       # At each position, look ahead by `shift` tokens to see if a
       # document boundary is present there.
-      print("DOCUMENT THING!!\n",not_a_document_boundary.shape)
       mask *= not_a_document_boundary[:, start_idx + shift : end_idx + shift]
     return mask
 
