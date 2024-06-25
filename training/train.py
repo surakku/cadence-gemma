@@ -4,6 +4,12 @@ from typing import Any, Mapping, Iterator
 import enum
 import functools
 
+import json
+
+import numpy as np
+
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="-1"
 
 # We import JAX and some related packages.
 # import chex
@@ -18,10 +24,34 @@ import torch
 # We will use tensorflow to handle the dataset
 import tensorflow as tf
 import tensorflow_datasets as tfds
+from datasets import load_dataset
 
 # Finally, we import Recurrentgemma.
 import sentencepiece as spm
-from recurrentgemma import jax as recurrentgemma
+from recurrentgemma import torch as recurrentgemma
+def tokenize_source(tokenizer, example: tf.Tensor):
+  return tokenizer.tokenize_tf_op(
+      example,
+      add_eos=False
+  )
+  
+def tokenize_destination(tokenizer, example: tf.Tensor):
+  return tokenizer.tokenize_tf_op(example, add_eos=True)
+
+def load_json_dataset(json_file):
+    # Load JSON data from file
+    with open(json_file, 'r') as f:
+        data = json.load(f)
+    
+    # Extract features and labels from JSON data (example)
+    imgs = [entry['image'] for entry in data]
+    qs = [entry['question'] for entry in data]
+    ans = [entry['answers'][0]['answer'] for entry in data]
+    # Create TensorFlow Dataset from extracted features and labels
+    dataset = tf.data.Dataset.from_tensor_slices((imgs, qs, ans))
+    
+
+    return dataset
 
 
 
@@ -40,8 +70,7 @@ class Tokenizer():
         input,
         add_eos=True
     ):
-        
-        int_list = self._spm_processor.EncodeAsIds(input)
+        int_list = self._spm_processor.EncodeAsIds(str(input))
         if add_eos:
             int_list.append(self._spm_processor.eos_id())
         return int_list
@@ -56,7 +85,7 @@ class Tokenizer():
         """Tensforflow operator for the tokenize function."""
         encoded = tf.numpy_function(
             self.tokenize,
-            [str_tensor, prefix, suffix, add_eos],
+            [str_tensor, add_eos],
             tf.int32)
         encoded.set_shape([None])
         return encoded
@@ -69,6 +98,8 @@ class Tokenizer():
     
 @dataclass   
 class TrainingInput:
+    
+    image: str
     # Input tokens given to the model
     input_tokens: torch.Tensor
 
@@ -82,8 +113,8 @@ class DatasetSplit(enum.Enum):
   
 class DatasetBuilder:
      
-    N_ITEMS = 0
-    BUFFER_SIZE_SHUFFLE = 10_000
+    N_ITEMS = {DatasetSplit.TRAIN: 20_000, DatasetSplit.VALIDATION: 0}
+    BUFFER_SIZE_SHUFFLE = 6_000
      
     def __init__(self,
                 tokenizer: Tokenizer,
@@ -94,19 +125,18 @@ class DatasetBuilder:
         tokenizer: Gemma tokenizer to use.
         max_seq_len: size of each sequence in a given batch.
         """
-        self.tokenizer = tokenizer
+        self._tokenizer = tokenizer
         
         self._base_data = {
-        # DatasetSplit.TRAIN: tfds.load("mtnt/en-fr",split="train"),
+            DatasetSplit.TRAIN: load_dataset("../data/anno", data_files="train.json"),
         # DatasetSplit.VALIDATION: tfds.load("mtnt/en-fr",split="valid"),
         }
         self._max_seq_len = max_seq_len
-        
 
     def _tokenize_source(self, example: tf.Tensor):
         """Tokenization function for the source."""
         return self._tokenizer.tokenize_tf_op(
-            example, prefix=self.TRANSLATION_PREFIX, suffix=self.TRANSLATION_SUFFIX,
+            example,
             add_eos=False
         )
 
@@ -127,8 +157,10 @@ class DatasetBuilder:
         )
         
         
+        
     def _to_training_input(
         self,
+        image,
         src_tokens: torch.Tensor,
         dst_tokens: torch.Tensor,
     ) -> TrainingInput:
@@ -136,13 +168,13 @@ class DatasetBuilder:
 
         # The input sequence fed to the model is simply the concatenation of the
         # source and the destination.
-        tokens = tf.concat([src_tokens, dst_tokens], axis=0)
+        tokens = torch.concat([src_tokens, dst_tokens], axis=0)
 
         # We want to prevent the model from updating based on the source (input)
         # tokens. To achieve this, we add a target mask to each input.
-        q_mask = tf.zeros_like(src_tokens, dtype=tf.bool)
-        a_mask = tf.ones_like(dst_tokens, dtype=tf.bool)
-        mask = tf.concat([q_mask, a_mask], axis=0)
+        q_mask = torch.zeros_like(src_tokens, dtype=torch.bool)
+        a_mask = torch.ones_like(dst_tokens, dtype=torch.bool)
+        mask = torch.concat([q_mask, a_mask], axis=0)
 
         # If the output tokens sequence is smaller than the target sequence size,
         # then we pad it with pad tokens.
@@ -151,34 +183,48 @@ class DatasetBuilder:
         # We don't want to perform the backward on the pad tokens.
         mask = self._pad_up_to_max_len(mask, False)
 
-        return TrainingInput(input_tokens=tokens, target_mask=mask)
-
-
-class Sampler:
+        return TrainingInput(image=image, input_tokens=tokens, target_mask=mask)
     
-    def __init__(self,
-                 model,
-                 tokenizer: Tokenizer,
-                 device,
-                 greedy_sampling=True,
-                 ):
-        self.model = model
-        self.vocab = tokenizer
-        self.device = device
-        self.greedy_sampling = greedy_sampling
-        self._eos_token = torch.tensor([self.vocab.eos_id()], device=self.device)
-        self.tokenizer = tokeninzer
+    def get_train_dataset(self, batch_size: int, num_epochs: int):
+        """Build the training dataset."""
+
+        # Tokenize each sample
+        ds = self._base_data[DatasetSplit.TRAIN]["train"]
         
-    def __call__(self,
-                 img_path,
-                 input_string,
-                 total_generation_steps,
-                 end_sampling_at_eos_token: bool = True,
-                 ):
+        inputs = []
         
-        in_tokens = self.tokenizer.tokenize(input_string)
+        for x in ds:
+            q_tokens = self._tokenizer.tokenize(x['question'], add_eos=False)
+            a_tokens = self._tokenizer.tokenize(x["answers"][0]["answer"], add_eos=True)
+            img = x["image"]
+            
+            train_input = self._to_training_input(img,torch.as_tensor(q_tokens, dtype=torch.int32), torch.as_tensor(a_tokens, dtype=torch.int32))
+            inputs.append(train_input)
         
-        in_len = torch.Tensor(len(in_tokens), device=self.device, dtype=torch.int32) + 1
+        # Remove the samples which are too long
+        # ds = ds.filter(lambda x: torch.shape(x.input_tokens)[0] <= self._max_seq_len)
+
+        # Shuffle the dataset
+        np.random.shuffle(inputs)
+        # Repeat if necessary
+        inputs = inputs * num_epochs
+
+        # Build batches
+        inputs = [inputs[i:i + batch_size] for i in range(0, len(inputs), batch_size)]
+        return inputs
+
+    def get_validation_dataset(self, batch_size: int):
+        """Build the validation dataset."""
+
+        # Same as the training dataset, but no shuffling and no repetition
+        ds = self._base_data[DatasetSplit.VALIDATION].map(
+            lambda x : (self._tokenize_source(x['src']),
+                        self._tokenize_destination(x['dst']))
+        )
+        ds = ds.map(lambda x, y: self._to_training_input(x, y))
+        ds = ds.filter(lambda x: tf.shape(x.input_tokens)[0] <= self._max_seq_len)
+        ds = ds.batch(batch_size, drop_remainder=True)
+        return ds
         
 
 if __name__ == "__main__":
@@ -186,23 +232,52 @@ if __name__ == "__main__":
     vocab.load("../model/tokenizer.model")
     
     tokeninzer = Tokenizer(vocab)
-
-    db = DatasetBuilder(tokenizer=tokeninzer, max_seq_len=100)
     
     device = "cuda:1"
     
-    params = torch.load("./model/2b-it.pt")
-    params = {k: v.to(device=device) for k, v in params.items()}
+    # ds = load_dataset("json",data_files="../data/anno/train.json", split="train")
     
+    # print(ds[:1])
+    # db = DatasetBuilder(tokenizer=tokeninzer, max_seq_len=100)
+        
+    # params = torch.load("./model/2b-it.pt")
+    # params = {k: v.to(device=device) for k, v in params.items()}
+    
+    # config = recurrentgemma.GriffinConfig.from_torch_params(
+    #     params,
+    #     preset=recurrentgemma.Preset.RECURRENT_GEMMA_2B_V1,
+    # )
+    
+    # model = recurrentgemma.Griffin(config, device=device, dtype=torch.bfloat16)
+    
+    # model.load_state_dict(params, strict=False)
+    
+    # sampler = Sampler(model=model, tokeninzer=tokeninzer, device=device)
+    
+    ds_builder = DatasetBuilder(tokeninzer, max_seq_len=30)
+    ds = ds_builder.get_train_dataset(3, 1)
+    os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
+    
+    
+    path_checkpoint = "../model/2b-it.pt"
+    
+    device = torch.device('cuda:1')
+    print(f"Loading the parameters from {path_checkpoint} into {device}")
+    params = torch.load(path_checkpoint)
+    params = {k: v.to(device=device) for k, v in params.items()}
+    print("Parameters loaded.")
+    # Create a sampler with the right param shapes.
     config = recurrentgemma.GriffinConfig.from_torch_params(
         params,
         preset=recurrentgemma.Preset.RECURRENT_GEMMA_2B_V1,
     )
-    
     model = recurrentgemma.Griffin(config, device=device, dtype=torch.bfloat16)
-    
     model.load_state_dict(params, strict=False)
     
-    sampler = Sampler(model=model, tokeninzer=tokeninzer, device=device)
+    sampler = recurrentgemma.Sampler(model=model, vocab=vocab)
     
+    print(len(ds[0]))
+    
+    output = sampler(["Tell me about this thing."], 100, img_path="/homes/jkobza/projects/recurrentgemma_experiments/recurrentgemma/vit/img_tests/dog.jpg")
+    print(output)
     
