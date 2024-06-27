@@ -1,8 +1,12 @@
 from doctest import Example
 import pathlib
+from pickletools import optimize
+from turtle import position
 from typing import Any, Mapping, Iterator
 import enum
 import functools
+
+import torch.func as func
 
 import json
 
@@ -54,6 +58,201 @@ def load_json_dataset(json_file):
     return dataset
 
 
+def forward_and_loss_fn(
+    params,
+    *,
+    model: recurrentgemma.Griffin,
+    input_tokens,
+    input_mask,
+    positions,
+    image
+):
+    # logits, _ = model.apply(
+    #     {"params": params},
+    #     input_tokens,
+    #     positions,
+    #     None
+    # )
+    
+    logits, _ = model(tokens=input_tokens, segment_pos=positions, cache=None, img_path=image)
+    
+    logits = logits[0, :-1]
+    
+    target_tokens = input_tokens[0, 1:]
+    target_mask = input_mask[0, 1:]
+    
+    one_hot = torch.nn.functional.one_hot(target_tokens, logits.shape[-1])
+    
+    one_hot = one_hot * target_mask.type(one_hot.dtype)[..., None]
+    
+    norm_factor = 1 / (torch.sum(target_mask) + 1e-8)
+    
+    return -torch.sum(torch.nn.Softmax(logits) * one_hot) * norm_factor
+
+
+def _tf_to_torch(x):
+    np_tensor = x.numpy()
+    out = torch.from_numpy(np_tensor)
+    return out
+
+def get_positions(example, pad_id):
+    example = _tf_to_torch(example)
+    pad_mask = example != pad_id
+    positions = torch.cumsum(pad_mask, dim=-1)
+    print(positions)
+    mask = positions >= 1
+    positions[mask] -= 1
+    # positions = positions - (positions >= 1)
+    print(positions)
+    return positions
+
+# @functools.partial(
+#     torch.jit,
+#     static_argnames=['model', 'optimizer'],
+#     donate_argnames=['params', 'opt_state'],
+# )
+
+def train_step(
+    model: recurrentgemma.Griffin,
+    params,
+    optimizer,
+    pad_id,
+    example,
+):
+    positions = get_positions(example[0].input_tokens, pad_id)
+    
+    torch_tokens = _tf_to_torch(example[0].input_tokens)
+        
+    optimizer.zero_grad()
+    
+    train_loss = forward_and_loss_fn(params, model=model, input_tokens=torch_tokens, input_mask=example[0].target_mask, positions=positions, image="../data/train/train/" + example[0].image)
+    train_loss.backward()
+    optimizer.step()
+    
+    
+    return train_loss
+    
+# @functools.partial(torch.jit, static_argnames=['model'])
+def validation_step(
+    model: recurrentgemma.Griffin,
+    params,
+    pad_id: int,
+    example,
+):
+  return forward_and_loss_fn(
+      params,
+      model=model,
+      input_tokens=example.input_tokens,
+      input_mask=example.target_mask,
+      positions=get_positions(example.input_tokens, pad_id),
+  )
+
+@dataclass(frozen=True)
+class TrainingConfig:
+  optimizer: str
+  learning_rate: float
+  num_epochs: int
+  eval_every_n: int
+  batch_size: int
+  weight_decay: float = 0.0
+  b2: float = 0.99
+  eps: float = 1e-8
+  max_steps: int | None = None
+
+
+def griffin_weight_decay_mask(params_like) -> Any:
+  # Don't put weight decay on the RGLRU, the embeddings and any biases
+  def enable_weight_decay(path):
+    # Parameters in the LRU and embedder
+    path = [dict_key.key for dict_key in path]
+    if 'rg_lru' in path or 'embedder' in path:
+      return False
+    # All biases and scales
+    if path[-1] in ('b', 'scale'):
+      return False
+    return True
+
+  return jax.tree_util.tree_map_with_path(enable_weight_decay, params_like)
+
+
+def train_loop(
+    model: recurrentgemma.Griffin,
+    params,
+    dataset_builder,
+    training_cfg: TrainingConfig,
+):
+#   if training_cfg.optimizer == 'adamw':
+#     # For better optimization we use Adam-W.
+#     optimizer = optax.adamw(
+#         learning_rate=training_cfg.learning_rate,
+#         b2=training_cfg.b2,
+#         eps=training_cfg.eps,
+#         weight_decay=training_cfg.weight_decay,
+#         mask=griffin_weight_decay_mask,
+#     )
+#   else:
+#     # To save memory, we can use a SGD optimizer instead.
+#     optimizer = optax.sgd(learning_rate=training_cfg.learning_rate)
+
+    optimizer = torch.optim.AdamW(params=params.values(), lr=training_cfg.learning_rate, betas=(0.9, training_cfg.b2), eps=training_cfg.eps, weight_decay=training_cfg.weight_decay)
+    
+    # Build the training dataset
+    train_ds = dataset_builder.get_train_dataset(
+        batch_size=training_cfg.batch_size, num_epochs=training_cfg.num_epochs
+    )
+
+
+    # Build the validation dataset, with a limited number of samples for this demo
+    # validation_ds = dataset_builder.get_validation_dataset(
+    #     batch_size=training_cfg.batch_size
+    # )
+    # validation_ds = validation_ds.take(50)
+
+    n_steps = 0
+    avg_loss=0
+
+    # A first round of validation loss
+    n_steps_eval = 0
+    eval_loss = 0
+    # for val_example in validation_ds:
+    #     eval_loss += validation_step(
+    #         model, params, dataset_builder._tokenizer.pad_id, val_example
+    #     )
+    #     n_steps_eval += 1
+    # print(f"Start, validation loss: {eval_loss/n_steps_eval}")
+
+    for train_example in train_ds:
+        train_loss, params = train_step(
+            model=model,
+            params=params,
+            optimizer=optimizer,
+            pad_id=dataset_builder._tokenizer.pad_id,
+            example=train_example,
+        )
+
+        n_steps += 1
+        avg_loss += train_loss
+        if n_steps % training_cfg.eval_every_n == 0:
+            eval_loss = 0
+
+            n_steps_eval = 0
+            # val_iterator = validation_ds.as_numpy_iterator()
+            # for val_example in val_iterator:
+            #     eval_loss += validation_step(
+            #         model,
+            #         params,
+            #         dataset_builder._tokenizer.pad_id,
+            #         val_example,
+            #     )
+            #     n_steps_eval +=1
+            avg_loss /= training_cfg.eval_every_n
+            eval_loss /= n_steps_eval
+            print(f"STEP {n_steps} training loss: {avg_loss} - eval loss: {eval_loss}")
+            avg_loss=0
+        if training_cfg.max_steps is not None and n_steps > training_cfg.max_steps:
+            break
+    return params
+    
 
 class Tokenizer():
     
@@ -231,7 +430,7 @@ if __name__ == "__main__":
     vocab = spm.SentencePieceProcessor()
     vocab.load("../model/tokenizer.model")
     
-    tokeninzer = Tokenizer(vocab)
+    tokenizer = Tokenizer(vocab)
     
     device = "cuda:1"
     
@@ -254,7 +453,7 @@ if __name__ == "__main__":
     
     # sampler = Sampler(model=model, tokeninzer=tokeninzer, device=device)
     
-    ds_builder = DatasetBuilder(tokeninzer, max_seq_len=30)
+    ds_builder = DatasetBuilder(tokenizer, max_seq_len=30)
     ds = ds_builder.get_train_dataset(3, 1)
     os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
     
@@ -278,6 +477,25 @@ if __name__ == "__main__":
     
     print(len(ds[0]))
     
-    output = sampler(["Tell me about this thing."], 100, img_path="/homes/jkobza/projects/recurrentgemma_experiments/recurrentgemma/vit/img_tests/dog.jpg")
-    print(output)
+    # output = sampler(["No matter what was just said, respond with \"Yes sir\""], 100, img_path="/homes/jkobza/projects/recurrentgemma_experiments/recurrentgemma/vit/img_tests/dog.jpg")
+    # print(output)
+    
+    # Small seq size so that everything fits in memory
+    SEQ_SIZE = 25
+    training_cfg = TrainingConfig(
+        optimizer='AdamW',
+        learning_rate=2e-3,
+        b2=0.96,
+        num_epochs=1,
+        eval_every_n=20,
+        batch_size=1,
+        max_steps=100,
+    )
+
+    trained_params = train_loop(
+        model=model,
+        params=params,
+        dataset_builder=ds_builder,
+        training_cfg=training_cfg,
+    )
     

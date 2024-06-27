@@ -163,6 +163,10 @@ class Griffin(nn.Module):
     """
     if not return_logits and not return_cache:
       return None, None
+
+    if(tokens.shape[0] != 1):
+        tokens = tokens[None, :]
+        
     input_emb = self.embedder.encode(tokens)
     x = input_emb
 

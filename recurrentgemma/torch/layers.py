@@ -15,8 +15,11 @@
 """Base layers."""
 
 from collections.abc import Sequence
+from curses import window
 import math
 from typing import overload, Literal
+
+from numpy import dtype
 
 import einops
 from recurrentgemma.torch import array_typing as at
@@ -465,7 +468,6 @@ class Conv1D(nn.Module):
       The output of the convolution and the updated state.
     """
     output_len = x.shape[1]
-
     if cache is not None:
       # 1. Decoding mode:
       # - We have access to the previous `self.temporal_width - 1` inputs.
@@ -499,12 +501,19 @@ class Conv1D(nn.Module):
       if cache is None:
         # - Ensure that the mask prevents accessing tokens from a different
         #   document in training mode.
-        window_mask = self._compute_document_mask(
+        # print(segment_pos,"\n", start_idx,"\n", end_idx,"\n", temporal_shift,"\n")
+        if(len(segment_pos.shape) != 2):
+          segment_pos = segment_pos[None, :]
+        window_mask = self._compute_document_mask( ## TODO FIND WHAT MASK SHOULD BE
             segment_pos=segment_pos,
             start_idx=start_idx,
             end_idx=end_idx,
             max_look_ahead=temporal_shift,
         )
+        # print(window_mask)
+        # if(len(window_mask.shape) >= 3):
+        #   window_mask = window_mask[:, :]
+        # print("SHAPE OF WINDOW", x_window.shape, "\nSHAPE OF MASK", window_mask.shape)
         x_window *= window_mask[:, :, None].type(x.dtype).to(device=x.device)
 
       x_window = self._pad_window(x_window, output_len)
@@ -525,6 +534,8 @@ class Conv1D(nn.Module):
     # 4. Store the new (potentially padded) cache for future decoding.
     new_cache = x[:, 1 - self.temporal_width :].type(cache_dtype)
     new_cache = self._pad_cache(new_cache)
+
+    print("CONV OUT !!!!", convolution_output)
 
     return convolution_output, new_cache
 
@@ -600,7 +611,16 @@ class Conv1D(nn.Module):
         (batch_size, end_idx - start_idx),
         device=segment_pos.device,
     )
-    for shift in range(1, max_look_ahead + 1):
+    # for shift in range(1, max_look_ahead + 1):
+    #   # At each position, look ahead by `shift` tokens to see if a
+    #   # document boundary is present there.
+    #   print("MASK", mask, "DOC",not_a_document_boundary[:, start_idx + shift : end_idx + shift] )
+    #   if(mask.shape != not_a_document_boundary[:, start_idx + shift : end_idx + shift].shape):
+    #     not_a_document_boundary = torch.cat((not_a_document_boundary[:, start_idx + shift : end_idx + shift], torch.Tensor([[1]])), dim=-1)
+    #     print(not_a_document_boundary)
+    #   mask *= not_a_document_boundary
+    
+    for shift in range(1, max_look_ahead): ## Was max__look_ahead - 1
       # At each position, look ahead by `shift` tokens to see if a
       # document boundary is present there.
       mask *= not_a_document_boundary[:, start_idx + shift : end_idx + shift]
