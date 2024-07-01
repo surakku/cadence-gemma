@@ -1,0 +1,29 @@
+2024-06-28 15:31:00,102 INFO    MainThread:2686473 [wandb_setup.py:_flush():76] Current SDK version is 0.17.1
+2024-06-28 15:31:00,104 INFO    MainThread:2686473 [wandb_setup.py:_flush():76] Configure stats pid to 2686473
+2024-06-28 15:31:00,104 INFO    MainThread:2686473 [wandb_setup.py:_flush():76] Loading settings from /homes/jkobza/.config/wandb/settings
+2024-06-28 15:31:00,104 INFO    MainThread:2686473 [wandb_setup.py:_flush():76] Loading settings from /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/settings
+2024-06-28 15:31:00,104 INFO    MainThread:2686473 [wandb_setup.py:_flush():76] Loading settings from environment variables: {}
+2024-06-28 15:31:00,104 INFO    MainThread:2686473 [wandb_setup.py:_flush():76] Applying setup settings: {'_disable_service': False}
+2024-06-28 15:31:00,104 INFO    MainThread:2686473 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program_relpath': 'training/train.py', 'program_abspath': '/nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/train.py', 'program': '/nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/train.py'}
+2024-06-28 15:31:00,104 INFO    MainThread:2686473 [wandb_setup.py:_flush():76] Applying login settings: {}
+2024-06-28 15:31:00,105 INFO    MainThread:2686473 [wandb_init.py:_log_setup():520] Logging user logs to /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240628_153100-gux01zjx/logs/debug.log
+2024-06-28 15:31:00,105 INFO    MainThread:2686473 [wandb_init.py:_log_setup():521] Logging internal logs to /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240628_153100-gux01zjx/logs/debug-internal.log
+2024-06-28 15:31:00,105 INFO    MainThread:2686473 [wandb_init.py:init():560] calling init triggers
+2024-06-28 15:31:00,105 INFO    MainThread:2686473 [wandb_init.py:init():567] wandb.init called with sweep_config: {}
+config: {'optimizer': 'AdamW', 'learning_rate': 0.002, 'b2': 0.96, 'num_epochs': 1, 'eval_every_n': 20, 'batch_size': 1, 'max_steps': 1000}
+2024-06-28 15:31:00,105 INFO    MainThread:2686473 [wandb_init.py:init():610] starting backend
+2024-06-28 15:31:00,105 INFO    MainThread:2686473 [wandb_init.py:init():614] setting up manager
+2024-06-28 15:31:00,107 INFO    MainThread:2686473 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2024-06-28 15:31:00,121 INFO    MainThread:2686473 [wandb_init.py:init():622] backend started and connected
+2024-06-28 15:31:00,126 INFO    MainThread:2686473 [wandb_init.py:init():711] updated telemetry
+2024-06-28 15:31:00,245 INFO    MainThread:2686473 [wandb_init.py:init():744] communicating run to backend with 90.0 second timeout
+2024-06-28 15:31:01,991 INFO    MainThread:2686473 [wandb_run.py:_on_init():2402] communicating current version
+2024-06-28 15:31:02,036 INFO    MainThread:2686473 [wandb_run.py:_on_init():2411] got version response upgrade_message: "wandb version 0.17.3 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2024-06-28 15:31:02,036 INFO    MainThread:2686473 [wandb_init.py:init():795] starting run threads in backend
+2024-06-28 15:31:17,093 INFO    MainThread:2686473 [wandb_run.py:_console_start():2380] atexit reg
+2024-06-28 15:31:17,093 INFO    MainThread:2686473 [wandb_run.py:_redirect():2235] redirect: wrap_raw
+2024-06-28 15:31:17,093 INFO    MainThread:2686473 [wandb_run.py:_redirect():2300] Wrapping output streams.
+2024-06-28 15:31:17,093 INFO    MainThread:2686473 [wandb_run.py:_redirect():2325] Redirects installed.
+2024-06-28 15:31:17,168 INFO    MainThread:2686473 [wandb_init.py:init():838] run started, returning control to user process
+2024-06-28 15:34:08,847 WARNING MsgRouterThr:2686473 [router.py:message_loop():77] message_loop has been closed

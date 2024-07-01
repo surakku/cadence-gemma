@@ -1,10 +1,29 @@
 from doctest import Example
+from importlib.machinery import NamespaceLoader
 import pathlib
 from pickletools import optimize
+import random
 from turtle import position
 from typing import Any, Mapping, Iterator
 import enum
 import functools
+import wandb
+
+# wandb.init(
+#     # set the wandb project where this run will be logged
+#     project="Cadence",
+
+#     # track hyperparameters and run metadata
+#     config={
+#         "optimizer":'AdamW',
+#         "learning_rate":2e-3,
+#         "b2":0.96,
+#         "num_epochs":1,
+#         "eval_every_n":20,
+#         "batch_size":1,
+#         "max_steps":1000,
+#     }
+# )
 
 import torch.func as func
 
@@ -67,27 +86,30 @@ def forward_and_loss_fn(
     positions,
     image
 ):
-    # logits, _ = model.apply(
-    #     {"params": params},
-    #     input_tokens,
-    #     positions,
-    #     None
-    # )
+
     
     logits, _ = model(tokens=input_tokens, segment_pos=positions, cache=None, img_path=image)
     
     logits = logits[0, :-1]
+
+    target_tokens = input_tokens[1:]
+    target_mask = input_mask[1:]
     
-    target_tokens = input_tokens[0, 1:]
-    target_mask = input_mask[0, 1:]
+    one_hot = torch.nn.functional.one_hot(target_tokens.to(torch.int64), logits.shape[-1])
     
-    one_hot = torch.nn.functional.one_hot(target_tokens, logits.shape[-1])
+    print(one_hot)
+    one_hot = one_hot * _tf_to_torch(target_mask).to(one_hot.dtype)[..., None]
+    print(one_hot)
     
-    one_hot = one_hot * target_mask.type(one_hot.dtype)[..., None]
+    norm_factor = 1 / (torch.sum(_tf_to_torch(target_mask)) + 1e-8)
     
-    norm_factor = 1 / (torch.sum(target_mask) + 1e-8)
+    norm = torch.nn.Softmax()
     
-    return -torch.sum(torch.nn.Softmax(logits) * one_hot) * norm_factor
+    
+    one_hot = torch.cat((one_hot, torch.zeros((1,256_000))), dim=0).to(logits.device)
+    
+    
+    return -torch.sum((norm(logits)) * one_hot) * norm_factor
 
 
 def _tf_to_torch(x):
@@ -99,11 +121,15 @@ def get_positions(example, pad_id):
     example = _tf_to_torch(example)
     pad_mask = example != pad_id
     positions = torch.cumsum(pad_mask, dim=-1)
-    print(positions)
+    
+    ## Add pos indicator for img embedding
+    
+    positions += 1
+    positions = torch.cat((torch.Tensor([1.]), positions), dim=-1)
+    
     mask = positions >= 1
     positions[mask] -= 1
     # positions = positions - (positions >= 1)
-    print(positions)
     return positions
 
 # @functools.partial(
@@ -119,6 +145,8 @@ def train_step(
     pad_id,
     example,
 ):
+    
+    
     positions = get_positions(example[0].input_tokens, pad_id)
     
     torch_tokens = _tf_to_torch(example[0].input_tokens)
@@ -138,14 +166,18 @@ def validation_step(
     params,
     pad_id: int,
     example,
-):
-  return forward_and_loss_fn(
-      params,
-      model=model,
-      input_tokens=example.input_tokens,
-      input_mask=example.target_mask,
-      positions=get_positions(example.input_tokens, pad_id),
-  )
+    ):
+    
+    torch_tokens = _tf_to_torch(example[0].input_tokens)
+    
+    return forward_and_loss_fn(params, model=model, input_tokens=torch_tokens, input_mask=example[0].target_mask, positions=get_positions(example[0].input_tokens, pad_id), image="../data/val/" + example[0].image)
+#   return forward_and_loss_fn(
+#       params,
+#       model=model,
+#       input_tokens=example.input_tokens,
+#       input_mask=example.target_mask,
+#       positions=get_positions(example.input_tokens, pad_id),
+#   )
 
 @dataclass(frozen=True)
 class TrainingConfig:
@@ -203,10 +235,10 @@ def train_loop(
 
 
     # Build the validation dataset, with a limited number of samples for this demo
-    # validation_ds = dataset_builder.get_validation_dataset(
-    #     batch_size=training_cfg.batch_size
-    # )
-    # validation_ds = validation_ds.take(50)
+    validation_ds = dataset_builder.get_validation_dataset(
+        batch_size=training_cfg.batch_size
+    )
+    validation_ds = random.sample(validation_ds, 10)
 
     n_steps = 0
     avg_loss=0
@@ -214,15 +246,14 @@ def train_loop(
     # A first round of validation loss
     n_steps_eval = 0
     eval_loss = 0
-    # for val_example in validation_ds:
-    #     eval_loss += validation_step(
-    #         model, params, dataset_builder._tokenizer.pad_id, val_example
-    #     )
-    #     n_steps_eval += 1
-    # print(f"Start, validation loss: {eval_loss/n_steps_eval}")
-
+    for val_example in validation_ds:
+        eval_loss += validation_step(
+            model, params, dataset_builder._tokenizer.pad_id, val_example
+        )
+        n_steps_eval += 1
+    print(f"Start, validation loss: {eval_loss/n_steps_eval}")
     for train_example in train_ds:
-        train_loss, params = train_step(
+        train_loss = train_step(
             model=model,
             params=params,
             optimizer=optimizer,
@@ -236,18 +267,18 @@ def train_loop(
             eval_loss = 0
 
             n_steps_eval = 0
-            # val_iterator = validation_ds.as_numpy_iterator()
-            # for val_example in val_iterator:
-            #     eval_loss += validation_step(
-            #         model,
-            #         params,
-            #         dataset_builder._tokenizer.pad_id,
-            #         val_example,
-            #     )
-            #     n_steps_eval +=1
+            for val_example in validation_ds:
+                eval_loss += validation_step(
+                    model,
+                    params,
+                    dataset_builder._tokenizer.pad_id,
+                    val_example,
+                )
+                n_steps_eval +=1
             avg_loss /= training_cfg.eval_every_n
-            eval_loss /= n_steps_eval
+            eval_loss /= n_steps_eval + 1e-8
             print(f"STEP {n_steps} training loss: {avg_loss} - eval loss: {eval_loss}")
+            # wandb.log({"train_loss": avg_loss, "eval_loss":eval_loss})
             avg_loss=0
         if training_cfg.max_steps is not None and n_steps > training_cfg.max_steps:
             break
@@ -291,7 +322,6 @@ class Tokenizer():
 
     def to_string(self, tokens) -> str:
         """Convert an array of tokens to a string."""
-        ## TODO running this line will probably error out since spp expects a list of ints
         return self._spm_processor.DecodeIds(tokens)
     
     
@@ -328,7 +358,7 @@ class DatasetBuilder:
         
         self._base_data = {
             DatasetSplit.TRAIN: load_dataset("../data/anno", data_files="train.json"),
-        # DatasetSplit.VALIDATION: tfds.load("mtnt/en-fr",split="valid"),
+            DatasetSplit.VALIDATION: load_dataset("../data/anno",data_files="val.json"),
         }
         self._max_seq_len = max_seq_len
 
@@ -416,14 +446,22 @@ class DatasetBuilder:
         """Build the validation dataset."""
 
         # Same as the training dataset, but no shuffling and no repetition
-        ds = self._base_data[DatasetSplit.VALIDATION].map(
-            lambda x : (self._tokenize_source(x['src']),
-                        self._tokenize_destination(x['dst']))
-        )
-        ds = ds.map(lambda x, y: self._to_training_input(x, y))
-        ds = ds.filter(lambda x: tf.shape(x.input_tokens)[0] <= self._max_seq_len)
-        ds = ds.batch(batch_size, drop_remainder=True)
-        return ds
+        ds = self._base_data[DatasetSplit.VALIDATION]["train"]
+        print(ds)
+        print(type(ds))
+        
+        valid = []
+        
+        for x in ds:
+            q_tokens = self._tokenizer.tokenize(x['question'], add_eos=False)
+            a_tokens = self._tokenizer.tokenize(x["answers"][0]["answer"], add_eos=True)
+            img = x["image"]
+            
+            train_input = self._to_training_input(img,torch.as_tensor(q_tokens, dtype=torch.int32), torch.as_tensor(a_tokens, dtype=torch.int32))
+            valid.append(train_input)
+            
+        valid = [valid[i:i + batch_size] for i in range(0, len(valid), batch_size)]
+        return valid
         
 
 if __name__ == "__main__":
@@ -473,7 +511,15 @@ if __name__ == "__main__":
     model = recurrentgemma.Griffin(config, device=device, dtype=torch.bfloat16)
     model.load_state_dict(params, strict=False)
     
-    sampler = recurrentgemma.Sampler(model=model, vocab=vocab)
+    # for name, param in model.named_parameters():
+    #   if param.requires_grad:
+    #       if "projector" not in name:
+    #           param.requires_grad = False
+
+    for name, param in model.named_parameters():
+      if param.requires_grad:
+          print(name)
+    
     
     print(len(ds[0]))
     
@@ -487,9 +533,9 @@ if __name__ == "__main__":
         learning_rate=2e-3,
         b2=0.96,
         num_epochs=1,
-        eval_every_n=20,
+        eval_every_n=10,
         batch_size=1,
-        max_steps=100,
+        max_steps=10000,
     )
 
     trained_params = train_loop(

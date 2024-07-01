@@ -85,7 +85,8 @@ class Griffin(nn.Module):
     self.final_norm = layers.RMSNorm(
         width=self.config.width, device=device, dtype=dtype
     )
-
+    
+    
   def reset_parameters(self) -> None:
     """Resets the parameters of the module."""
     self.embedder.reset_parameters()
@@ -169,7 +170,7 @@ class Griffin(nn.Module):
         
     input_emb = self.embedder.encode(tokens)
     x = input_emb
-
+    
 
     if 0 in segment_pos:
         dog = self.vis_encoder(img_path)
