@@ -1,0 +1,903 @@
+2024-07-01 15:18:13,386 INFO    StreamThr :15324 [internal.py:wandb_internal():85] W&B internal server running at pid: 15324, started at: 2024-07-01 15:18:13.384935
+2024-07-01 15:18:13,389 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status
+2024-07-01 15:18:13,391 INFO    WriterThread:15324 [datastore.py:open_for_write():87] open: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/run-yoa4trpr.wandb
+2024-07-01 15:18:13,395 DEBUG   SenderThread:15324 [sender.py:send():379] send: header
+2024-07-01 15:18:13,401 DEBUG   SenderThread:15324 [sender.py:send():379] send: run
+2024-07-01 15:18:13,594 INFO    SenderThread:15324 [dir_watcher.py:__init__():211] watching files in: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files
+2024-07-01 15:18:13,594 INFO    SenderThread:15324 [sender.py:_start_run_threads():1188] run started: yoa4trpr with start time 1719865093.38645
+2024-07-01 15:18:13,608 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: check_version
+2024-07-01 15:18:13,608 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: check_version
+2024-07-01 15:18:13,660 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: run_start
+2024-07-01 15:18:13,694 DEBUG   HandlerThread:15324 [system_info.py:__init__():26] System info init
+2024-07-01 15:18:13,694 DEBUG   HandlerThread:15324 [system_info.py:__init__():41] System info init done
+2024-07-01 15:18:13,694 INFO    HandlerThread:15324 [system_monitor.py:start():194] Starting system monitor
+2024-07-01 15:18:13,694 INFO    SystemMonitor:15324 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-07-01 15:18:13,694 INFO    HandlerThread:15324 [system_monitor.py:probe():214] Collecting system info
+2024-07-01 15:18:13,696 INFO    SystemMonitor:15324 [interfaces.py:start():188] Started cpu monitoring
+2024-07-01 15:18:13,697 INFO    SystemMonitor:15324 [interfaces.py:start():188] Started disk monitoring
+2024-07-01 15:18:13,698 INFO    SystemMonitor:15324 [interfaces.py:start():188] Started gpu monitoring
+2024-07-01 15:18:13,699 INFO    SystemMonitor:15324 [interfaces.py:start():188] Started memory monitoring
+2024-07-01 15:18:13,701 INFO    SystemMonitor:15324 [interfaces.py:start():188] Started network monitoring
+2024-07-01 15:18:13,723 DEBUG   HandlerThread:15324 [system_info.py:probe():152] Probing system
+2024-07-01 15:18:13,726 DEBUG   HandlerThread:15324 [system_info.py:_probe_git():137] Probing git
+2024-07-01 15:18:13,740 DEBUG   HandlerThread:15324 [system_info.py:_probe_git():145] Probing git done
+2024-07-01 15:18:13,740 DEBUG   HandlerThread:15324 [system_info.py:probe():200] Probing system done
+2024-07-01 15:18:13,740 DEBUG   HandlerThread:15324 [system_monitor.py:probe():223] {'os': 'Linux-5.4.0-187-generic-x86_64-with-glibc2.31', 'python': '3.12.3', 'heartbeatAt': '2024-07-01T20:18:13.723742', 'startedAt': '2024-07-01T20:18:13.326764', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': '/nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/train.py', 'codePathLocal': 'train.py', 'codePath': 'training/train.py', 'git': {'remote': 'https://github.com/surakku/cadence-gemma.git', 'commit': '333e062efc4cdeb60c78abfc7c826bc0a29cc518'}, 'email': 'jdj105music@gmail.com', 'root': '/nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments', 'host': 'lambda12', 'username': 'jkobza', 'executable': '/homes/jkobza/miniconda3/bin/python', 'cpu_count': 24, 'cpu_count_logical': 48, 'cpu_freq': {'current': 1075.1945208333339, 'min': 1000.0, 'max': 3200.0}, 'cpu_freq_per_core': [{'current': 1000.029, 'min': 1000.0, 'max': 3200.0}, {'current': 2446.801, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.079, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.16, 'min': 1000.0, 'max': 3200.0}, {'current': 1031.502, 'min': 1000.0, 'max': 3200.0}, {'current': 1002.382, 'min': 1000.0, 'max': 3200.0}, {'current': 1001.383, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.079, 'min': 1000.0, 'max': 3200.0}, {'current': 1217.563, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.83, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.18, 'min': 1000.0, 'max': 3200.0}, {'current': 1400.443, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.397, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.209, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.156, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.97, 'min': 1000.0, 'max': 3200.0}, {'current': 1001.052, 'min': 1000.0, 'max': 3200.0}, {'current': 999.636, 'min': 1000.0, 'max': 3200.0}, {'current': 1166.56, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.956, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.76, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.289, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.01, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.474, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.52, 'min': 1000.0, 'max': 3200.0}, {'current': 2361.83, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.384, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.378, 'min': 1000.0, 'max': 3200.0}, {'current': 1054.404, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.336, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.139, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.375, 'min': 1000.0, 'max': 3200.0}, {'current': 1130.735, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.189, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.193, 'min': 1000.0, 'max': 3200.0}, {'current': 1400.321, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.822, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.049, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.067, 'min': 1000.0, 'max': 3200.0}, {'current': 999.577, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.704, 'min': 1000.0, 'max': 3200.0}, {'current': 1001.581, 'min': 1000.0, 'max': 3200.0}, {'current': 1146.802, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.075, 'min': 1000.0, 'max': 3200.0}, {'current': 1001.268, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.483, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.015, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.211, 'min': 1000.0, 'max': 3200.0}], 'disk': {'/': {'total': 1670.832851409912, 'used': 80.0433578491211}}, 'gpu': 'Tesla V100-SXM2-32GB', 'gpu_count': 2, 'gpu_devices': [{'name': 'Tesla V100-SXM2-32GB', 'memory_total': 34359738368}, {'name': 'Tesla V100-SXM2-32GB', 'memory_total': 34359738368}], 'memory': {'total': 125.5551528930664}}
+2024-07-01 15:18:13,740 INFO    HandlerThread:15324 [system_monitor.py:probe():224] Finished collecting system info
+2024-07-01 15:18:13,741 INFO    HandlerThread:15324 [system_monitor.py:probe():227] Publishing system info
+2024-07-01 15:18:13,741 DEBUG   HandlerThread:15324 [system_info.py:_save_conda():209] Saving list of conda packages installed into the current environment
+2024-07-01 15:18:14,598 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_created():271] file/dir created: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/conda-environment.yaml
+2024-07-01 15:18:20,931 DEBUG   HandlerThread:15324 [system_info.py:_save_conda():224] Saving conda packages done
+2024-07-01 15:18:20,935 INFO    HandlerThread:15324 [system_monitor.py:probe():229] Finished publishing system info
+2024-07-01 15:18:20,950 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:18:20,950 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: keepalive
+2024-07-01 15:18:20,950 DEBUG   SenderThread:15324 [sender.py:send():379] send: files
+2024-07-01 15:18:20,951 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-metadata.json with policy now
+2024-07-01 15:18:21,147 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: python_packages
+2024-07-01 15:18:21,147 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: python_packages
+2024-07-01 15:18:21,149 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:18:21,149 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:21,152 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:18:21,212 INFO    wandb-upload_0:15324 [upload_job.py:push():130] Uploaded file /tmp/tmpg0fcyzmuwandb/gvahswau-wandb-metadata.json
+2024-07-01 15:18:21,234 DEBUG   SenderThread:15324 [sender.py:send():379] send: telemetry
+2024-07-01 15:18:21,601 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/conda-environment.yaml
+2024-07-01 15:18:21,602 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_created():271] file/dir created: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-metadata.json
+2024-07-01 15:18:21,603 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_created():271] file/dir created: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/requirements.txt
+2024-07-01 15:18:22,186 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:23,152 DEBUG   SenderThread:15324 [sender.py:send():379] send: telemetry
+2024-07-01 15:18:23,187 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:24,153 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:18:24,189 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:25,269 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:26,265 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:26,595 DEBUG   SenderThread:15324 [sender.py:send():379] send: telemetry
+2024-07-01 15:18:27,271 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:28,267 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:28,475 DEBUG   SenderThread:15324 [sender.py:send():379] send: telemetry
+2024-07-01 15:18:28,476 DEBUG   SenderThread:15324 [sender.py:send():379] send: telemetry
+2024-07-01 15:18:28,851 DEBUG   SenderThread:15324 [sender.py:send():379] send: telemetry
+2024-07-01 15:18:29,267 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:29,630 DEBUG   SenderThread:15324 [sender.py:send():379] send: telemetry
+2024-07-01 15:18:29,631 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:18:30,267 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:31,267 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:31,839 DEBUG   SenderThread:15324 [sender.py:send():379] send: telemetry
+2024-07-01 15:18:32,196 DEBUG   SenderThread:15324 [sender.py:send():379] send: telemetry
+2024-07-01 15:18:32,376 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:33,377 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:34,376 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:35,197 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:18:35,377 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:36,149 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:18:36,150 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:18:36,377 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:37,378 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:38,378 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:39,378 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:40,202 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:18:40,378 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:41,378 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:42,378 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:43,379 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:44,379 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:45,380 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:46,157 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:18:46,380 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:46,621 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/config.yaml
+2024-07-01 15:18:47,380 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:48,380 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:49,380 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:50,380 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:51,149 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:18:51,149 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:18:51,280 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:18:51,381 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:52,382 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:53,382 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:54,382 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:55,382 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:56,382 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:57,151 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:18:57,382 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:58,383 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:18:59,383 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:00,383 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:01,383 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:02,151 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:19:02,384 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:03,384 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:04,384 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:05,384 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:06,149 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:19:06,149 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:19:06,385 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:07,271 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:19:07,385 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:07,671 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_created():271] file/dir created: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:19:08,385 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:09,385 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:09,673 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:19:10,385 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:11,385 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:12,385 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:12,708 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:19:13,386 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:13,677 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:19:13,701 DEBUG   SystemMonitor:15324 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2024-07-01 15:19:13,704 DEBUG   SenderThread:15324 [sender.py:send():379] send: stats
+2024-07-01 15:19:14,386 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:15,386 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:16,386 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:17,386 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:18,152 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:19:18,386 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:19,387 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:20,386 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:21,149 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:19:21,149 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:19:21,387 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:22,387 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:23,388 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:23,685 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:19:24,044 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:19:24,388 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:25,388 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:26,388 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:27,389 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:28,389 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:29,152 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:19:29,389 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:30,390 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:31,390 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:32,390 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:33,391 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:34,391 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:35,153 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:19:35,391 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:36,149 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:19:36,150 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:19:36,391 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:37,391 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:38,392 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:39,392 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:40,274 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:19:40,392 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:41,392 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:42,393 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:43,393 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:43,706 DEBUG   SenderThread:15324 [sender.py:send():379] send: stats
+2024-07-01 15:19:44,393 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:45,393 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:45,707 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:19:46,393 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:47,394 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:48,394 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:49,395 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:50,395 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:51,149 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:19:51,150 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:19:51,234 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:19:51,395 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:52,395 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:53,396 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:54,396 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:55,396 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:56,397 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:57,154 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:19:57,397 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:58,397 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:19:59,398 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:00,398 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:01,398 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:02,154 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:20:02,398 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:03,399 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:04,399 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:05,399 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:06,150 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:20:06,150 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:20:06,400 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:07,226 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:20:07,400 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:08,400 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:09,400 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:10,400 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:11,400 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:12,401 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:13,154 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:20:13,401 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:13,707 DEBUG   SenderThread:15324 [sender.py:send():379] send: stats
+2024-07-01 15:20:13,731 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:20:14,401 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:15,401 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:16,401 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:17,401 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:17,761 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:20:18,401 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:19,155 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:20:19,402 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:20,402 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:21,150 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:20:21,150 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:20:21,402 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:22,403 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:23,403 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:24,292 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:20:24,403 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:25,403 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:26,403 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:27,403 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:28,403 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:29,404 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:30,155 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:20:30,404 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:31,465 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:31,707 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:20:31,709 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:20:31,709 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:20:31,713 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:20:31,773 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_created():271] file/dir created: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:20:32,464 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:33,465 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:33,775 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:20:34,465 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:35,465 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:35,714 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:20:36,150 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:20:36,151 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:20:36,465 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:37,465 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:38,466 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:39,465 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:40,466 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:41,466 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:20:41,466 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:42,466 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:43,466 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:43,758 DEBUG   SenderThread:15324 [sender.py:send():379] send: stats
+2024-07-01 15:20:44,466 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:45,467 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:46,466 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:20:46,467 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:47,467 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:47,535 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:20:47,536 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:20:47,536 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:20:47,540 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:20:47,787 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:20:48,467 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:49,467 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:49,788 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:20:50,467 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:51,150 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:20:51,151 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:20:51,466 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:20:51,467 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:52,469 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:53,468 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:54,468 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:55,468 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:56,468 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:57,466 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:20:57,469 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:58,469 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:20:59,469 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:00,469 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:01,469 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:02,191 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:21:02,192 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:21:02,193 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:21:02,195 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:21:02,469 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:02,806 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:21:03,196 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:21:03,470 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:03,807 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:21:04,470 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:05,470 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:06,150 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:21:06,151 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:21:06,470 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:07,470 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:08,467 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:21:08,471 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:09,471 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:10,471 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:11,471 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:12,471 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:13,467 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:21:13,471 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:13,711 DEBUG   SenderThread:15324 [sender.py:send():379] send: stats
+2024-07-01 15:21:14,471 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:15,471 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:16,471 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:17,472 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:17,819 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:21:17,821 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:21:17,821 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:21:17,825 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:21:18,472 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:18,819 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:21:18,825 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:21:19,472 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:19,820 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:21:20,472 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:21,151 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:21:21,151 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:21:21,472 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:22,473 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:23,473 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:24,467 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:21:24,473 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:25,473 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:26,473 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:27,474 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:28,474 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:29,468 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:21:29,474 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:30,474 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:31,474 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:32,475 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:33,475 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:33,535 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:21:33,536 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:21:33,543 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:21:33,547 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:21:33,831 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:21:34,475 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:34,548 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:21:35,475 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:35,832 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:21:36,151 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:21:36,151 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:21:36,475 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:37,475 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:38,475 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:39,476 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:40,468 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:21:40,476 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:41,476 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:42,518 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:43,518 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:43,713 DEBUG   SenderThread:15324 [sender.py:send():379] send: stats
+2024-07-01 15:21:44,518 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:45,518 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:45,715 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:21:46,518 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:47,519 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:48,519 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:49,519 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:49,619 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:21:49,621 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:21:49,621 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:21:49,625 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:21:49,858 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:21:50,519 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:51,151 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:21:51,152 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:21:51,292 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:21:51,519 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:51,860 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:21:52,519 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:53,520 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:54,521 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:55,520 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:56,468 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:21:56,521 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:57,521 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:58,521 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:21:59,521 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:00,521 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:01,521 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:02,468 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:22:02,521 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:03,522 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:04,522 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:05,163 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:22:05,164 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:22:05,165 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:22:05,169 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:22:05,522 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:05,873 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:22:06,151 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:22:06,152 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:22:06,522 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:07,469 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:22:07,522 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:07,874 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:22:08,522 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:09,523 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:10,523 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:11,523 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:12,523 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:13,469 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:22:13,523 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:13,716 DEBUG   SenderThread:15324 [sender.py:send():379] send: stats
+2024-07-01 15:22:14,523 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:15,523 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:16,627 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:17,626 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:18,627 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:18,628 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:22:19,629 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:20,627 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:21,151 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:22:21,152 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:22:21,627 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:21,754 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:22:21,754 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:22:21,755 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:22:21,758 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:22:21,886 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:22:22,627 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:23,627 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:23,759 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:22:23,887 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:22:24,628 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:25,628 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:26,628 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:27,628 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:28,628 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:29,628 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:22:29,628 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:30,629 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:31,629 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:32,629 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:33,629 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:34,630 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:35,628 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:22:35,629 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:36,152 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:22:36,152 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:22:36,630 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:36,970 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:22:36,972 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:22:36,972 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:22:36,978 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:22:37,630 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:37,914 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:22:38,630 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:39,630 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:39,916 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:22:40,630 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:40,979 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:22:41,631 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:42,631 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:43,631 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:43,717 DEBUG   SenderThread:15324 [sender.py:send():379] send: stats
+2024-07-01 15:22:44,631 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:45,631 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:46,628 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:22:46,631 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:47,631 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:48,631 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:49,632 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:50,632 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:51,152 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:22:51,152 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:22:51,628 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:22:51,632 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:52,632 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:53,271 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:22:53,272 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:22:53,273 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:22:53,277 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:22:53,632 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:53,929 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:22:54,632 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:55,633 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:55,930 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:22:56,633 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:57,629 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:22:57,633 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:58,633 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:22:59,634 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:00,634 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:01,634 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:02,629 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:23:02,634 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:03,634 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:04,634 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:05,635 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:06,152 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:23:06,152 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:23:06,635 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:07,629 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:23:07,635 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:08,635 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:08,863 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:23:08,864 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:23:08,865 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:23:08,868 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:23:08,940 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:23:09,635 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:09,941 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:23:10,635 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:11,635 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:12,629 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:23:12,635 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:13,636 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:13,718 DEBUG   SenderThread:15324 [sender.py:send():379] send: stats
+2024-07-01 15:23:14,636 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:15,636 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:16,636 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:17,630 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:23:17,636 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:18,637 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:19,637 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:20,637 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:21,338 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:23:21,338 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:23:21,637 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:22,637 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:23,630 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:23:23,637 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:24,159 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:23:24,160 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:23:24,161 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:23:24,165 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:23:24,637 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:24,960 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:23:25,637 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:25,961 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:23:26,637 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:27,638 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:28,630 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:23:28,638 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:29,638 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:30,638 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:31,638 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:32,639 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:33,639 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:34,630 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:23:34,639 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:35,639 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:36,338 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:23:36,338 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:23:36,639 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:37,639 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:38,639 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:39,487 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:23:39,488 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:23:39,489 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:23:39,493 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:23:39,640 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:39,974 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:23:40,493 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:23:40,640 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:41,640 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:41,975 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:23:42,640 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:43,640 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:43,720 DEBUG   SenderThread:15324 [sender.py:send():379] send: stats
+2024-07-01 15:23:44,640 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:45,641 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:45,721 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:23:46,640 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:47,641 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:48,641 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:49,641 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:50,641 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:51,338 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:23:51,338 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:23:51,419 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:23:51,641 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:52,642 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:53,642 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:54,642 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:55,019 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:23:55,021 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:23:55,021 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:23:55,024 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:23:55,642 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:55,988 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:23:56,630 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:23:56,642 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:57,642 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:57,989 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:23:58,643 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:23:59,643 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:00,643 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:01,631 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:24:01,643 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:02,643 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:03,644 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:04,643 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:05,644 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:06,338 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:24:06,339 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:24:06,631 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:24:06,643 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:07,644 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:08,644 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:09,644 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:10,247 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:24:10,248 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:24:10,249 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:24:10,252 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:24:10,644 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:11,041 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:24:11,631 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:24:11,644 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:12,042 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:24:12,644 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:13,644 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:13,721 DEBUG   SenderThread:15324 [sender.py:send():379] send: stats
+2024-07-01 15:24:14,645 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:15,645 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:16,645 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:17,631 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:24:17,645 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:18,646 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:19,646 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:20,646 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:21,338 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:24:21,339 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:24:21,646 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:22,647 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:23,631 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:24:23,830 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:24,830 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:25,830 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:26,611 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:24:26,612 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:24:26,613 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:24:26,616 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:24:26,830 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:27,054 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:24:27,830 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:28,055 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:24:28,631 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:24:28,830 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:29,830 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:30,830 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:31,831 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:32,834 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:33,632 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:24:33,832 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:34,832 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:35,832 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:36,338 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:24:36,339 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:24:36,832 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:37,832 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:38,832 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:39,084 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:24:39,832 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:40,833 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:41,833 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:42,823 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:24:42,824 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:24:42,825 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:24:42,828 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:24:42,833 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:43,069 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:24:43,723 DEBUG   SenderThread:15324 [sender.py:send():379] send: stats
+2024-07-01 15:24:43,833 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:44,070 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:24:44,724 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:24:44,833 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:45,833 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:46,833 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:47,834 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:48,834 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:49,834 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:50,633 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:24:50,834 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:51,339 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:24:51,339 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:24:51,834 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:52,834 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:53,835 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:54,835 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:55,633 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:24:55,835 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:56,835 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:57,835 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:58,787 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:24:58,788 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:24:58,789 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:24:58,792 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:24:58,835 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:24:59,143 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:24:59,836 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:00,185 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:25:00,793 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:25:00,835 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:01,836 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:02,836 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:03,836 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:04,836 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:05,836 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:06,339 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:25:06,339 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:25:06,836 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:07,836 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:08,309 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:25:08,837 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:09,837 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:10,837 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:11,837 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:12,837 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:13,633 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:25:13,724 DEBUG   SenderThread:15324 [sender.py:send():379] send: stats
+2024-07-01 15:25:13,837 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:14,175 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:25:14,176 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:25:14,177 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:25:14,180 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:25:14,196 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:25:14,837 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:15,837 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:16,198 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:25:16,838 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:17,838 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:18,633 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:25:18,838 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:19,838 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:20,839 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:21,339 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:25:21,340 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:25:21,839 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:22,839 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:23,839 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:24,633 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:25:24,839 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:25,839 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:26,839 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:27,839 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:28,839 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:29,634 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:25:29,783 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: partial_history
+2024-07-01 15:25:29,785 DEBUG   SenderThread:15324 [sender.py:send():379] send: history
+2024-07-01 15:25:29,785 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: summary_record
+2024-07-01 15:25:29,788 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:25:29,840 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:30,210 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:25:30,840 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:31,840 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:32,211 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:25:32,840 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:33,840 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:34,310 DEBUG   SenderThread:15324 [sender.py:send():379] send: exit
+2024-07-01 15:25:34,310 INFO    SenderThread:15324 [sender.py:send_exit():586] handling exit code: 255
+2024-07-01 15:25:34,312 INFO    SenderThread:15324 [sender.py:send_exit():588] handling runtime: 440
+2024-07-01 15:25:34,314 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:25:34,315 INFO    SenderThread:15324 [sender.py:send_exit():594] send defer
+2024-07-01 15:25:34,315 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:25:34,316 INFO    HandlerThread:15324 [handler.py:handle_request_defer():184] handle defer: 0
+2024-07-01 15:25:34,317 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:25:34,318 INFO    SenderThread:15324 [sender.py:send_request_defer():610] handle sender defer: 0
+2024-07-01 15:25:34,318 INFO    SenderThread:15324 [sender.py:transition_state():614] send defer: 1
+2024-07-01 15:25:34,318 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:25:34,318 INFO    HandlerThread:15324 [handler.py:handle_request_defer():184] handle defer: 1
+2024-07-01 15:25:34,319 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:25:34,320 INFO    SenderThread:15324 [sender.py:send_request_defer():610] handle sender defer: 1
+2024-07-01 15:25:34,320 INFO    SenderThread:15324 [sender.py:transition_state():614] send defer: 2
+2024-07-01 15:25:34,320 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:25:34,321 INFO    HandlerThread:15324 [handler.py:handle_request_defer():184] handle defer: 2
+2024-07-01 15:25:34,321 INFO    HandlerThread:15324 [system_monitor.py:finish():203] Stopping system monitor
+2024-07-01 15:25:34,321 DEBUG   SystemMonitor:15324 [system_monitor.py:_start():179] Finished system metrics aggregation loop
+2024-07-01 15:25:34,323 INFO    HandlerThread:15324 [interfaces.py:finish():200] Joined cpu monitor
+2024-07-01 15:25:34,323 DEBUG   SystemMonitor:15324 [system_monitor.py:_start():183] Publishing last batch of metrics
+2024-07-01 15:25:34,323 INFO    HandlerThread:15324 [interfaces.py:finish():200] Joined disk monitor
+2024-07-01 15:25:34,526 INFO    HandlerThread:15324 [interfaces.py:finish():200] Joined gpu monitor
+2024-07-01 15:25:34,527 INFO    HandlerThread:15324 [interfaces.py:finish():200] Joined memory monitor
+2024-07-01 15:25:34,528 INFO    HandlerThread:15324 [interfaces.py:finish():200] Joined network monitor
+2024-07-01 15:25:34,529 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:25:34,529 INFO    SenderThread:15324 [sender.py:send_request_defer():610] handle sender defer: 2
+2024-07-01 15:25:34,529 INFO    SenderThread:15324 [sender.py:transition_state():614] send defer: 3
+2024-07-01 15:25:34,529 DEBUG   SenderThread:15324 [sender.py:send():379] send: stats
+2024-07-01 15:25:34,529 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:25:34,530 INFO    HandlerThread:15324 [handler.py:handle_request_defer():184] handle defer: 3
+2024-07-01 15:25:34,531 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:25:34,531 INFO    SenderThread:15324 [sender.py:send_request_defer():610] handle sender defer: 3
+2024-07-01 15:25:34,531 INFO    SenderThread:15324 [sender.py:transition_state():614] send defer: 4
+2024-07-01 15:25:34,531 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:25:34,531 INFO    HandlerThread:15324 [handler.py:handle_request_defer():184] handle defer: 4
+2024-07-01 15:25:34,533 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:25:34,533 INFO    SenderThread:15324 [sender.py:send_request_defer():610] handle sender defer: 4
+2024-07-01 15:25:34,533 INFO    SenderThread:15324 [sender.py:transition_state():614] send defer: 5
+2024-07-01 15:25:34,534 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:25:34,535 INFO    HandlerThread:15324 [handler.py:handle_request_defer():184] handle defer: 5
+2024-07-01 15:25:34,535 DEBUG   SenderThread:15324 [sender.py:send():379] send: summary
+2024-07-01 15:25:34,538 INFO    SenderThread:15324 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:25:34,538 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:25:34,539 INFO    SenderThread:15324 [sender.py:send_request_defer():610] handle sender defer: 5
+2024-07-01 15:25:34,539 INFO    SenderThread:15324 [sender.py:transition_state():614] send defer: 6
+2024-07-01 15:25:34,539 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:25:34,540 INFO    HandlerThread:15324 [handler.py:handle_request_defer():184] handle defer: 6
+2024-07-01 15:25:34,540 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:25:34,541 INFO    SenderThread:15324 [sender.py:send_request_defer():610] handle sender defer: 6
+2024-07-01 15:25:34,541 INFO    SenderThread:15324 [sender.py:transition_state():614] send defer: 7
+2024-07-01 15:25:34,541 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:25:34,542 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:25:34,542 INFO    HandlerThread:15324 [handler.py:handle_request_defer():184] handle defer: 7
+2024-07-01 15:25:34,543 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:25:34,543 INFO    SenderThread:15324 [sender.py:send_request_defer():610] handle sender defer: 7
+2024-07-01 15:25:35,215 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:25:35,215 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:25:35,301 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-01 15:25:37,159 INFO    SenderThread:15324 [sender.py:transition_state():614] send defer: 8
+2024-07-01 15:25:37,159 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: poll_exit
+2024-07-01 15:25:37,160 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:25:37,161 INFO    HandlerThread:15324 [handler.py:handle_request_defer():184] handle defer: 8
+2024-07-01 15:25:37,161 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:25:37,162 INFO    SenderThread:15324 [sender.py:send_request_defer():610] handle sender defer: 8
+2024-07-01 15:25:37,162 INFO    SenderThread:15324 [job_builder.py:build():440] Attempting to build job artifact
+2024-07-01 15:25:37,163 INFO    SenderThread:15324 [job_builder.py:_get_source_type():569] is repo sourced job
+2024-07-01 15:25:37,217 INFO    Thread-12 :15324 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:25:37,298 INFO    SenderThread:15324 [job_builder.py:build():545] adding wandb-job metadata file
+2024-07-01 15:25:37,302 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-01 15:25:37,328 INFO    SenderThread:15324 [sender.py:transition_state():614] send defer: 9
+2024-07-01 15:25:37,329 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: poll_exit
+2024-07-01 15:25:37,329 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:25:37,329 DEBUG   SenderThread:15324 [sender.py:send():379] send: artifact
+2024-07-01 15:25:37,330 INFO    HandlerThread:15324 [handler.py:handle_request_defer():184] handle defer: 9
+2024-07-01 15:25:37,944 INFO    SenderThread:15324 [sender.py:send_artifact():1530] sent artifact job-https___github.com_surakku_cadence-gemma.git_training_train.py - {'id': 'QXJ0aWZhY3Q6OTM1NDU2ODk2', 'state': 'COMMITTED', 'artifactSequence': {'id': 'QXJ0aWZhY3RDb2xsZWN0aW9uOjIzNzAyMDU4Mg==', 'latestArtifact': {'id': 'QXJ0aWZhY3Q6OTM1NDY0NDEx', 'versionIndex': 4}}}
+2024-07-01 15:25:37,944 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:25:37,944 INFO    SenderThread:15324 [sender.py:send_request_defer():610] handle sender defer: 9
+2024-07-01 15:25:37,944 INFO    SenderThread:15324 [dir_watcher.py:finish():358] shutting down directory watcher
+2024-07-01 15:25:38,218 INFO    SenderThread:15324 [dir_watcher.py:finish():388] scan: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files
+2024-07-01 15:25:38,219 INFO    SenderThread:15324 [dir_watcher.py:finish():402] scan save: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/config.yaml config.yaml
+2024-07-01 15:25:38,220 INFO    SenderThread:15324 [dir_watcher.py:finish():402] scan save: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/conda-environment.yaml conda-environment.yaml
+2024-07-01 15:25:38,224 INFO    SenderThread:15324 [dir_watcher.py:finish():402] scan save: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-metadata.json wandb-metadata.json
+2024-07-01 15:25:38,224 INFO    SenderThread:15324 [dir_watcher.py:finish():402] scan save: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/requirements.txt requirements.txt
+2024-07-01 15:25:38,225 INFO    SenderThread:15324 [dir_watcher.py:finish():402] scan save: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log output.log
+2024-07-01 15:25:38,232 INFO    SenderThread:15324 [dir_watcher.py:finish():402] scan save: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json wandb-summary.json
+2024-07-01 15:25:38,236 INFO    SenderThread:15324 [sender.py:transition_state():614] send defer: 10
+2024-07-01 15:25:38,236 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:25:38,240 INFO    HandlerThread:15324 [handler.py:handle_request_defer():184] handle defer: 10
+2024-07-01 15:25:38,240 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:25:38,241 INFO    SenderThread:15324 [sender.py:send_request_defer():610] handle sender defer: 10
+2024-07-01 15:25:38,241 INFO    SenderThread:15324 [file_pusher.py:finish():169] shutting down file pusher
+2024-07-01 15:25:38,303 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-01 15:25:38,304 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: poll_exit
+2024-07-01 15:25:38,458 INFO    wandb-upload_0:15324 [upload_job.py:push():130] Uploaded file /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/config.yaml
+2024-07-01 15:25:38,521 INFO    wandb-upload_1:15324 [upload_job.py:push():130] Uploaded file /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/conda-environment.yaml
+2024-07-01 15:25:38,542 INFO    wandb-upload_2:15324 [upload_job.py:push():130] Uploaded file /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/requirements.txt
+2024-07-01 15:25:38,548 INFO    wandb-upload_3:15324 [upload_job.py:push():130] Uploaded file /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/output.log
+2024-07-01 15:25:38,568 INFO    wandb-upload_4:15324 [upload_job.py:push():130] Uploaded file /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/files/wandb-summary.json
+2024-07-01 15:25:38,769 INFO    Thread-11 (_thread_body):15324 [sender.py:transition_state():614] send defer: 11
+2024-07-01 15:25:38,769 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:25:38,770 INFO    HandlerThread:15324 [handler.py:handle_request_defer():184] handle defer: 11
+2024-07-01 15:25:38,771 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:25:38,771 INFO    SenderThread:15324 [sender.py:send_request_defer():610] handle sender defer: 11
+2024-07-01 15:25:38,772 INFO    SenderThread:15324 [file_pusher.py:join():175] waiting for file pusher
+2024-07-01 15:25:38,772 INFO    SenderThread:15324 [sender.py:transition_state():614] send defer: 12
+2024-07-01 15:25:38,773 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:25:38,774 INFO    HandlerThread:15324 [handler.py:handle_request_defer():184] handle defer: 12
+2024-07-01 15:25:38,775 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:25:38,775 INFO    SenderThread:15324 [sender.py:send_request_defer():610] handle sender defer: 12
+2024-07-01 15:25:38,775 INFO    SenderThread:15324 [file_stream.py:finish():601] file stream finish called
+2024-07-01 15:25:39,000 INFO    SenderThread:15324 [file_stream.py:finish():605] file stream finish is done
+2024-07-01 15:25:39,000 INFO    SenderThread:15324 [sender.py:transition_state():614] send defer: 13
+2024-07-01 15:25:39,000 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:25:39,036 INFO    HandlerThread:15324 [handler.py:handle_request_defer():184] handle defer: 13
+2024-07-01 15:25:39,037 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:25:39,037 INFO    SenderThread:15324 [sender.py:send_request_defer():610] handle sender defer: 13
+2024-07-01 15:25:39,037 INFO    SenderThread:15324 [sender.py:transition_state():614] send defer: 14
+2024-07-01 15:25:39,039 DEBUG   SenderThread:15324 [sender.py:send():379] send: final
+2024-07-01 15:25:39,039 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:25:39,039 DEBUG   SenderThread:15324 [sender.py:send():379] send: footer
+2024-07-01 15:25:39,040 INFO    HandlerThread:15324 [handler.py:handle_request_defer():184] handle defer: 14
+2024-07-01 15:25:39,041 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:25:39,042 INFO    SenderThread:15324 [sender.py:send_request_defer():610] handle sender defer: 14
+2024-07-01 15:25:39,042 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-01 15:25:39,046 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: server_info
+2024-07-01 15:25:39,047 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-01 15:25:39,047 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: poll_exit
+2024-07-01 15:25:39,047 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: get_summary
+2024-07-01 15:25:39,048 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: server_info
+2024-07-01 15:25:39,048 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: sampled_history
+2024-07-01 15:25:39,052 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:25:39,090 DEBUG   SenderThread:15324 [sender.py:send_request():406] send_request: poll_exit
+2024-07-01 15:25:39,091 INFO    MainThread:15324 [wandb_run.py:_footer_history_summary_info():4008] rendering history
+2024-07-01 15:25:39,092 INFO    MainThread:15324 [wandb_run.py:_footer_history_summary_info():4040] rendering summary
+2024-07-01 15:25:39,093 INFO    MainThread:15324 [wandb_run.py:_footer_sync_info():3967] logging synced files
+2024-07-01 15:25:39,095 DEBUG   HandlerThread:15324 [handler.py:handle_request():158] handle_request: shutdown
+2024-07-01 15:25:39,095 INFO    HandlerThread:15324 [handler.py:finish():882] shutting down handler
+2024-07-01 15:25:40,048 INFO    WriterThread:15324 [datastore.py:close():296] close: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151813-yoa4trpr/run-yoa4trpr.wandb
+2024-07-01 15:25:40,091 INFO    SenderThread:15324 [sender.py:finish():1608] shutting down sender
+2024-07-01 15:25:40,091 INFO    SenderThread:15324 [file_pusher.py:finish():169] shutting down file pusher
+2024-07-01 15:25:40,092 INFO    SenderThread:15324 [file_pusher.py:join():175] waiting for file pusher

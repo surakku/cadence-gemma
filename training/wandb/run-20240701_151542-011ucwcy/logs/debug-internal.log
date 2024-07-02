@@ -1,0 +1,360 @@
+2024-07-01 15:15:42,803 INFO    StreamThr :14901 [internal.py:wandb_internal():85] W&B internal server running at pid: 14901, started at: 2024-07-01 15:15:42.783344
+2024-07-01 15:15:42,840 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status
+2024-07-01 15:15:42,842 INFO    WriterThread:14901 [datastore.py:open_for_write():87] open: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/run-011ucwcy.wandb
+2024-07-01 15:15:42,846 DEBUG   SenderThread:14901 [sender.py:send():379] send: header
+2024-07-01 15:15:42,846 DEBUG   SenderThread:14901 [sender.py:send():379] send: run
+2024-07-01 15:15:43,092 INFO    SenderThread:14901 [dir_watcher.py:__init__():211] watching files in: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files
+2024-07-01 15:15:43,092 INFO    SenderThread:14901 [sender.py:_start_run_threads():1188] run started: 011ucwcy with start time 1719864942.804621
+2024-07-01 15:15:43,106 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: check_version
+2024-07-01 15:15:43,107 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: check_version
+2024-07-01 15:15:43,160 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: run_start
+2024-07-01 15:15:43,200 DEBUG   HandlerThread:14901 [system_info.py:__init__():26] System info init
+2024-07-01 15:15:43,201 DEBUG   HandlerThread:14901 [system_info.py:__init__():41] System info init done
+2024-07-01 15:15:43,201 INFO    HandlerThread:14901 [system_monitor.py:start():194] Starting system monitor
+2024-07-01 15:15:43,201 INFO    SystemMonitor:14901 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-07-01 15:15:43,201 INFO    HandlerThread:14901 [system_monitor.py:probe():214] Collecting system info
+2024-07-01 15:15:43,202 INFO    SystemMonitor:14901 [interfaces.py:start():188] Started cpu monitoring
+2024-07-01 15:15:43,204 INFO    SystemMonitor:14901 [interfaces.py:start():188] Started disk monitoring
+2024-07-01 15:15:43,205 INFO    SystemMonitor:14901 [interfaces.py:start():188] Started gpu monitoring
+2024-07-01 15:15:43,206 INFO    SystemMonitor:14901 [interfaces.py:start():188] Started memory monitoring
+2024-07-01 15:15:43,207 INFO    SystemMonitor:14901 [interfaces.py:start():188] Started network monitoring
+2024-07-01 15:15:43,235 DEBUG   HandlerThread:14901 [system_info.py:probe():152] Probing system
+2024-07-01 15:15:43,237 DEBUG   HandlerThread:14901 [system_info.py:_probe_git():137] Probing git
+2024-07-01 15:15:43,251 DEBUG   HandlerThread:14901 [system_info.py:_probe_git():145] Probing git done
+2024-07-01 15:15:43,252 DEBUG   HandlerThread:14901 [system_info.py:probe():200] Probing system done
+2024-07-01 15:15:43,252 DEBUG   HandlerThread:14901 [system_monitor.py:probe():223] {'os': 'Linux-5.4.0-187-generic-x86_64-with-glibc2.31', 'python': '3.12.3', 'heartbeatAt': '2024-07-01T20:15:43.235172', 'startedAt': '2024-07-01T20:15:42.705210', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': '/nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/train.py', 'codePathLocal': 'train.py', 'codePath': 'training/train.py', 'git': {'remote': 'https://github.com/surakku/cadence-gemma.git', 'commit': '333e062efc4cdeb60c78abfc7c826bc0a29cc518'}, 'email': 'jdj105music@gmail.com', 'root': '/nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments', 'host': 'lambda12', 'username': 'jkobza', 'executable': '/homes/jkobza/miniconda3/bin/python', 'cpu_count': 24, 'cpu_count_logical': 48, 'cpu_freq': {'current': 1089.3572083333336, 'min': 1000.0, 'max': 3200.0}, 'cpu_freq_per_core': [{'current': 1000.035, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.194, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.497, 'min': 1000.0, 'max': 3200.0}, {'current': 999.722, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.219, 'min': 1000.0, 'max': 3200.0}, {'current': 1882.245, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.189, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.435, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.319, 'min': 1000.0, 'max': 3200.0}, {'current': 1038.083, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.295, 'min': 1000.0, 'max': 3200.0}, {'current': 1094.052, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.751, 'min': 1000.0, 'max': 3200.0}, {'current': 1012.649, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.27, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.827, 'min': 1000.0, 'max': 3200.0}, {'current': 1001.183, 'min': 1000.0, 'max': 3200.0}, {'current': 1154.483, 'min': 1000.0, 'max': 3200.0}, {'current': 1954.139, 'min': 1000.0, 'max': 3200.0}, {'current': 1001.042, 'min': 1000.0, 'max': 3200.0}, {'current': 1001.044, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.255, 'min': 1000.0, 'max': 3200.0}, {'current': 1001.008, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.306, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.756, 'min': 1000.0, 'max': 3200.0}, {'current': 1001.004, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.728, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.741, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.213, 'min': 1000.0, 'max': 3200.0}, {'current': 1937.071, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.927, 'min': 1000.0, 'max': 3200.0}, {'current': 999.869, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.172, 'min': 1000.0, 'max': 3200.0}, {'current': 1197.713, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.234, 'min': 1000.0, 'max': 3200.0}, {'current': 1078.703, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.517, 'min': 1000.0, 'max': 3200.0}, {'current': 1015.096, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.33, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.442, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.209, 'min': 1000.0, 'max': 3200.0}, {'current': 1085.547, 'min': 1000.0, 'max': 3200.0}, {'current': 1623.138, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.873, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.313, 'min': 1000.0, 'max': 3200.0}, {'current': 1001.149, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.822, 'min': 1000.0, 'max': 3200.0}, {'current': 1000.571, 'min': 1000.0, 'max': 3200.0}], 'disk': {'/': {'total': 1670.832851409912, 'used': 80.04331970214844}}, 'gpu': 'Tesla V100-SXM2-32GB', 'gpu_count': 2, 'gpu_devices': [{'name': 'Tesla V100-SXM2-32GB', 'memory_total': 34359738368}, {'name': 'Tesla V100-SXM2-32GB', 'memory_total': 34359738368}], 'memory': {'total': 125.5551528930664}}
+2024-07-01 15:15:43,253 INFO    HandlerThread:14901 [system_monitor.py:probe():224] Finished collecting system info
+2024-07-01 15:15:43,253 INFO    HandlerThread:14901 [system_monitor.py:probe():227] Publishing system info
+2024-07-01 15:15:43,253 DEBUG   HandlerThread:14901 [system_info.py:_save_conda():209] Saving list of conda packages installed into the current environment
+2024-07-01 15:15:44,096 INFO    Thread-12 :14901 [dir_watcher.py:_on_file_created():271] file/dir created: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/conda-environment.yaml
+2024-07-01 15:15:50,098 INFO    Thread-12 :14901 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/conda-environment.yaml
+2024-07-01 15:15:50,156 DEBUG   HandlerThread:14901 [system_info.py:_save_conda():224] Saving conda packages done
+2024-07-01 15:15:50,160 INFO    HandlerThread:14901 [system_monitor.py:probe():229] Finished publishing system info
+2024-07-01 15:15:50,178 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:15:50,179 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: keepalive
+2024-07-01 15:15:50,179 DEBUG   SenderThread:14901 [sender.py:send():379] send: files
+2024-07-01 15:15:50,180 INFO    SenderThread:14901 [sender.py:_save_file():1454] saving file wandb-metadata.json with policy now
+2024-07-01 15:15:50,349 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: python_packages
+2024-07-01 15:15:50,350 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: python_packages
+2024-07-01 15:15:50,350 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:15:50,358 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:15:50,361 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:15:50,484 INFO    wandb-upload_0:14901 [upload_job.py:push():130] Uploaded file /tmp/tmpkbtep57ywandb/hgpf37fd-wandb-metadata.json
+2024-07-01 15:15:50,499 DEBUG   SenderThread:14901 [sender.py:send():379] send: telemetry
+2024-07-01 15:15:51,099 INFO    Thread-12 :14901 [dir_watcher.py:_on_file_created():271] file/dir created: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/wandb-metadata.json
+2024-07-01 15:15:51,099 INFO    Thread-12 :14901 [dir_watcher.py:_on_file_created():271] file/dir created: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/requirements.txt
+2024-07-01 15:15:51,351 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:15:52,351 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:15:52,578 DEBUG   SenderThread:14901 [sender.py:send():379] send: telemetry
+2024-07-01 15:15:53,352 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:15:53,578 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:15:54,353 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:15:55,352 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:15:56,353 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:15:57,047 DEBUG   SenderThread:14901 [sender.py:send():379] send: telemetry
+2024-07-01 15:15:57,354 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:15:58,354 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:15:59,048 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:15:59,249 DEBUG   SenderThread:14901 [sender.py:send():379] send: telemetry
+2024-07-01 15:15:59,249 DEBUG   SenderThread:14901 [sender.py:send():379] send: telemetry
+2024-07-01 15:15:59,355 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:15:59,673 DEBUG   SenderThread:14901 [sender.py:send():379] send: telemetry
+2024-07-01 15:16:00,419 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:00,610 DEBUG   SenderThread:14901 [sender.py:send():379] send: telemetry
+2024-07-01 15:16:01,416 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:02,415 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:03,166 DEBUG   SenderThread:14901 [sender.py:send():379] send: telemetry
+2024-07-01 15:16:03,420 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:03,609 DEBUG   SenderThread:14901 [sender.py:send():379] send: telemetry
+2024-07-01 15:16:04,421 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:04,609 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:16:05,350 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:16:05,351 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:16:05,421 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:06,421 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:07,421 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:08,421 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:09,422 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:10,421 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:16:10,422 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:11,423 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:12,423 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:13,423 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:14,424 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:15,427 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:16:15,428 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:16,141 INFO    Thread-12 :14901 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/config.yaml
+2024-07-01 15:16:16,424 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:17,424 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:18,424 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:19,425 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:20,351 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:16:20,351 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:16:20,425 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:21,421 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:16:21,425 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:22,426 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:23,426 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:24,426 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:25,426 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:26,422 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:16:26,427 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:27,427 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:28,427 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:29,427 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:30,427 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:31,428 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:32,422 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:16:32,428 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:33,428 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:34,428 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:35,351 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:16:35,352 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:16:35,428 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:36,429 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:37,429 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:38,422 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:16:38,429 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:39,429 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:40,160 INFO    Thread-12 :14901 [dir_watcher.py:_on_file_created():271] file/dir created: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/output.log
+2024-07-01 15:16:40,429 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:41,429 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:42,163 INFO    Thread-12 :14901 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/output.log
+2024-07-01 15:16:42,429 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:43,207 DEBUG   SystemMonitor:14901 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2024-07-01 15:16:43,210 DEBUG   SenderThread:14901 [sender.py:send():379] send: stats
+2024-07-01 15:16:43,430 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:44,211 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:16:44,430 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:45,430 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:46,166 INFO    Thread-12 :14901 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/output.log
+2024-07-01 15:16:46,430 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:47,430 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:48,430 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:49,422 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:16:49,431 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:50,351 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:16:50,352 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:16:50,431 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:51,431 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:52,431 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:53,431 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:54,423 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:16:54,431 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:55,431 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:56,432 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:57,432 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:58,177 INFO    Thread-12 :14901 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/output.log
+2024-07-01 15:16:58,433 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:59,433 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:16:59,594 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:17:00,434 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:01,434 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:02,434 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:03,435 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:04,434 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:05,352 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:17:05,353 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:17:05,434 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:05,466 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:17:06,436 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:07,436 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:08,436 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:09,436 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:10,436 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:11,424 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:17:11,436 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:12,437 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:13,212 DEBUG   SenderThread:14901 [sender.py:send():379] send: stats
+2024-07-01 15:17:13,437 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:14,437 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:15,437 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:16,438 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:17,424 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:17:17,438 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:18,438 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:19,438 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:20,352 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:17:20,353 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:17:20,438 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:21,439 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:22,435 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:17:22,439 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:23,439 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:24,440 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:25,439 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:26,440 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:27,441 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:28,425 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:17:28,441 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:29,441 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:30,441 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:31,441 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:32,441 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:33,425 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:17:33,442 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:34,442 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:35,353 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: stop_status
+2024-07-01 15:17:35,353 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: stop_status
+2024-07-01 15:17:35,442 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:36,443 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:37,443 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:38,443 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:38,451 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:17:39,443 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:40,444 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:41,444 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:42,444 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:43,214 DEBUG   SenderThread:14901 [sender.py:send():379] send: stats
+2024-07-01 15:17:43,444 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:44,215 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:17:44,218 INFO    Thread-12 :14901 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/output.log
+2024-07-01 15:17:44,444 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:45,483 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:46,444 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:46,597 DEBUG   SenderThread:14901 [sender.py:send():379] send: exit
+2024-07-01 15:17:46,597 INFO    SenderThread:14901 [sender.py:send_exit():586] handling exit code: 1
+2024-07-01 15:17:46,598 INFO    SenderThread:14901 [sender.py:send_exit():588] handling runtime: 123
+2024-07-01 15:17:46,601 INFO    SenderThread:14901 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:17:46,601 INFO    SenderThread:14901 [sender.py:send_exit():594] send defer
+2024-07-01 15:17:46,602 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:17:46,603 INFO    HandlerThread:14901 [handler.py:handle_request_defer():184] handle defer: 0
+2024-07-01 15:17:46,603 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:17:46,604 INFO    SenderThread:14901 [sender.py:send_request_defer():610] handle sender defer: 0
+2024-07-01 15:17:46,604 INFO    SenderThread:14901 [sender.py:transition_state():614] send defer: 1
+2024-07-01 15:17:46,604 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:17:46,604 INFO    HandlerThread:14901 [handler.py:handle_request_defer():184] handle defer: 1
+2024-07-01 15:17:46,605 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:17:46,605 INFO    SenderThread:14901 [sender.py:send_request_defer():610] handle sender defer: 1
+2024-07-01 15:17:46,605 INFO    SenderThread:14901 [sender.py:transition_state():614] send defer: 2
+2024-07-01 15:17:46,606 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:17:46,606 INFO    HandlerThread:14901 [handler.py:handle_request_defer():184] handle defer: 2
+2024-07-01 15:17:46,606 INFO    HandlerThread:14901 [system_monitor.py:finish():203] Stopping system monitor
+2024-07-01 15:17:46,607 DEBUG   SystemMonitor:14901 [system_monitor.py:_start():179] Finished system metrics aggregation loop
+2024-07-01 15:17:46,607 INFO    HandlerThread:14901 [interfaces.py:finish():200] Joined cpu monitor
+2024-07-01 15:17:46,608 DEBUG   SystemMonitor:14901 [system_monitor.py:_start():183] Publishing last batch of metrics
+2024-07-01 15:17:46,608 INFO    HandlerThread:14901 [interfaces.py:finish():200] Joined disk monitor
+2024-07-01 15:17:46,813 INFO    HandlerThread:14901 [interfaces.py:finish():200] Joined gpu monitor
+2024-07-01 15:17:46,814 INFO    HandlerThread:14901 [interfaces.py:finish():200] Joined memory monitor
+2024-07-01 15:17:46,815 INFO    HandlerThread:14901 [interfaces.py:finish():200] Joined network monitor
+2024-07-01 15:17:46,816 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:17:46,817 INFO    SenderThread:14901 [sender.py:send_request_defer():610] handle sender defer: 2
+2024-07-01 15:17:46,817 INFO    SenderThread:14901 [sender.py:transition_state():614] send defer: 3
+2024-07-01 15:17:46,818 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:17:46,818 DEBUG   SenderThread:14901 [sender.py:send():379] send: stats
+2024-07-01 15:17:46,819 INFO    HandlerThread:14901 [handler.py:handle_request_defer():184] handle defer: 3
+2024-07-01 15:17:46,820 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:17:46,821 INFO    SenderThread:14901 [sender.py:send_request_defer():610] handle sender defer: 3
+2024-07-01 15:17:46,821 INFO    SenderThread:14901 [sender.py:transition_state():614] send defer: 4
+2024-07-01 15:17:46,821 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:17:46,822 INFO    HandlerThread:14901 [handler.py:handle_request_defer():184] handle defer: 4
+2024-07-01 15:17:46,822 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:17:46,823 INFO    SenderThread:14901 [sender.py:send_request_defer():610] handle sender defer: 4
+2024-07-01 15:17:46,823 INFO    SenderThread:14901 [sender.py:transition_state():614] send defer: 5
+2024-07-01 15:17:46,823 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:17:46,824 INFO    HandlerThread:14901 [handler.py:handle_request_defer():184] handle defer: 5
+2024-07-01 15:17:46,824 DEBUG   SenderThread:14901 [sender.py:send():379] send: summary
+2024-07-01 15:17:46,827 INFO    SenderThread:14901 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-07-01 15:17:46,828 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:17:46,828 INFO    SenderThread:14901 [sender.py:send_request_defer():610] handle sender defer: 5
+2024-07-01 15:17:46,828 INFO    SenderThread:14901 [sender.py:transition_state():614] send defer: 6
+2024-07-01 15:17:46,828 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:17:46,829 INFO    HandlerThread:14901 [handler.py:handle_request_defer():184] handle defer: 6
+2024-07-01 15:17:46,829 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:17:46,829 INFO    SenderThread:14901 [sender.py:send_request_defer():610] handle sender defer: 6
+2024-07-01 15:17:46,830 INFO    SenderThread:14901 [sender.py:transition_state():614] send defer: 7
+2024-07-01 15:17:46,830 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: status_report
+2024-07-01 15:17:46,830 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:17:46,831 INFO    HandlerThread:14901 [handler.py:handle_request_defer():184] handle defer: 7
+2024-07-01 15:17:46,831 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:17:46,832 INFO    SenderThread:14901 [sender.py:send_request_defer():610] handle sender defer: 7
+2024-07-01 15:17:47,221 INFO    Thread-12 :14901 [dir_watcher.py:_on_file_created():271] file/dir created: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/wandb-summary.json
+2024-07-01 15:17:47,597 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-01 15:17:48,223 INFO    Thread-12 :14901 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/output.log
+2024-07-01 15:17:49,555 INFO    SenderThread:14901 [sender.py:transition_state():614] send defer: 8
+2024-07-01 15:17:49,556 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: poll_exit
+2024-07-01 15:17:49,556 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:17:49,558 INFO    HandlerThread:14901 [handler.py:handle_request_defer():184] handle defer: 8
+2024-07-01 15:17:49,558 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:17:49,559 INFO    SenderThread:14901 [sender.py:send_request_defer():610] handle sender defer: 8
+2024-07-01 15:17:49,559 INFO    SenderThread:14901 [job_builder.py:build():440] Attempting to build job artifact
+2024-07-01 15:17:49,560 INFO    SenderThread:14901 [job_builder.py:_get_source_type():569] is repo sourced job
+2024-07-01 15:17:49,598 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-01 15:17:49,651 INFO    SenderThread:14901 [job_builder.py:build():545] adding wandb-job metadata file
+2024-07-01 15:17:49,697 INFO    SenderThread:14901 [sender.py:transition_state():614] send defer: 9
+2024-07-01 15:17:49,697 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: poll_exit
+2024-07-01 15:17:49,698 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:17:49,698 DEBUG   SenderThread:14901 [sender.py:send():379] send: artifact
+2024-07-01 15:17:49,699 INFO    HandlerThread:14901 [handler.py:handle_request_defer():184] handle defer: 9
+2024-07-01 15:17:50,069 INFO    wandb-upload_1:14901 [upload_job.py:push():85] Skipped uploading /homes/jkobza/.local/share/wandb/artifacts/staging/tmp74s163mg
+2024-07-01 15:17:50,151 INFO    wandb-upload_0:14901 [upload_job.py:push():88] Uploaded file /tmp/tmpixsu21gp/wandb-job.json
+2024-07-01 15:17:50,225 INFO    Thread-12 :14901 [dir_watcher.py:_on_file_modified():288] file/dir modified: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/output.log
+2024-07-01 15:17:50,600 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-01 15:17:50,678 INFO    SenderThread:14901 [sender.py:send_artifact():1530] sent artifact job-https___github.com_surakku_cadence-gemma.git_training_train.py - {'id': 'QXJ0aWZhY3Q6OTM1NDY0NDEx', 'state': 'PENDING', 'artifactSequence': {'id': 'QXJ0aWZhY3RDb2xsZWN0aW9uOjIzNzAyMDU4Mg==', 'latestArtifact': {'id': 'QXJ0aWZhY3Q6OTM1NDU2ODk2', 'versionIndex': 3}}}
+2024-07-01 15:17:50,678 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:17:50,678 INFO    SenderThread:14901 [sender.py:send_request_defer():610] handle sender defer: 9
+2024-07-01 15:17:50,678 INFO    SenderThread:14901 [dir_watcher.py:finish():358] shutting down directory watcher
+2024-07-01 15:17:51,226 INFO    SenderThread:14901 [dir_watcher.py:finish():388] scan: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files
+2024-07-01 15:17:51,227 INFO    SenderThread:14901 [dir_watcher.py:finish():402] scan save: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/config.yaml config.yaml
+2024-07-01 15:17:51,228 INFO    SenderThread:14901 [dir_watcher.py:finish():402] scan save: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/conda-environment.yaml conda-environment.yaml
+2024-07-01 15:17:51,232 INFO    SenderThread:14901 [dir_watcher.py:finish():402] scan save: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/wandb-metadata.json wandb-metadata.json
+2024-07-01 15:17:51,232 INFO    SenderThread:14901 [dir_watcher.py:finish():402] scan save: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/requirements.txt requirements.txt
+2024-07-01 15:17:51,236 INFO    SenderThread:14901 [dir_watcher.py:finish():402] scan save: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/output.log output.log
+2024-07-01 15:17:51,236 INFO    SenderThread:14901 [dir_watcher.py:finish():402] scan save: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/wandb-summary.json wandb-summary.json
+2024-07-01 15:17:51,241 INFO    SenderThread:14901 [sender.py:transition_state():614] send defer: 10
+2024-07-01 15:17:51,244 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: poll_exit
+2024-07-01 15:17:51,245 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:17:51,248 INFO    HandlerThread:14901 [handler.py:handle_request_defer():184] handle defer: 10
+2024-07-01 15:17:51,249 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:17:51,249 INFO    SenderThread:14901 [sender.py:send_request_defer():610] handle sender defer: 10
+2024-07-01 15:17:51,249 INFO    SenderThread:14901 [file_pusher.py:finish():169] shutting down file pusher
+2024-07-01 15:17:51,396 INFO    wandb-upload_1:14901 [upload_job.py:push():130] Uploaded file /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/config.yaml
+2024-07-01 15:17:51,442 INFO    wandb-upload_0:14901 [upload_job.py:push():130] Uploaded file /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/conda-environment.yaml
+2024-07-01 15:17:51,461 INFO    wandb-upload_2:14901 [upload_job.py:push():130] Uploaded file /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/requirements.txt
+2024-07-01 15:17:51,463 INFO    wandb-upload_3:14901 [upload_job.py:push():130] Uploaded file /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/output.log
+2024-07-01 15:17:51,470 INFO    wandb-upload_4:14901 [upload_job.py:push():130] Uploaded file /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/files/wandb-summary.json
+2024-07-01 15:17:51,601 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-01 15:17:51,601 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: poll_exit
+2024-07-01 15:17:51,670 INFO    Thread-11 (_thread_body):14901 [sender.py:transition_state():614] send defer: 11
+2024-07-01 15:17:51,671 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:17:51,672 INFO    HandlerThread:14901 [handler.py:handle_request_defer():184] handle defer: 11
+2024-07-01 15:17:51,672 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:17:51,673 INFO    SenderThread:14901 [sender.py:send_request_defer():610] handle sender defer: 11
+2024-07-01 15:17:51,673 INFO    SenderThread:14901 [file_pusher.py:join():175] waiting for file pusher
+2024-07-01 15:17:51,673 INFO    SenderThread:14901 [sender.py:transition_state():614] send defer: 12
+2024-07-01 15:17:51,674 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:17:51,674 INFO    HandlerThread:14901 [handler.py:handle_request_defer():184] handle defer: 12
+2024-07-01 15:17:51,675 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:17:51,676 INFO    SenderThread:14901 [sender.py:send_request_defer():610] handle sender defer: 12
+2024-07-01 15:17:51,676 INFO    SenderThread:14901 [file_stream.py:finish():601] file stream finish called
+2024-07-01 15:17:51,821 INFO    SenderThread:14901 [file_stream.py:finish():605] file stream finish is done
+2024-07-01 15:17:51,821 INFO    SenderThread:14901 [sender.py:transition_state():614] send defer: 13
+2024-07-01 15:17:51,821 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:17:51,822 INFO    HandlerThread:14901 [handler.py:handle_request_defer():184] handle defer: 13
+2024-07-01 15:17:51,823 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:17:51,823 INFO    SenderThread:14901 [sender.py:send_request_defer():610] handle sender defer: 13
+2024-07-01 15:17:51,824 INFO    SenderThread:14901 [sender.py:transition_state():614] send defer: 14
+2024-07-01 15:17:51,824 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: defer
+2024-07-01 15:17:51,824 DEBUG   SenderThread:14901 [sender.py:send():379] send: final
+2024-07-01 15:17:51,824 INFO    HandlerThread:14901 [handler.py:handle_request_defer():184] handle defer: 14
+2024-07-01 15:17:51,825 DEBUG   SenderThread:14901 [sender.py:send():379] send: footer
+2024-07-01 15:17:51,826 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: defer
+2024-07-01 15:17:51,826 INFO    SenderThread:14901 [sender.py:send_request_defer():610] handle sender defer: 14
+2024-07-01 15:17:51,826 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-01 15:17:51,827 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: poll_exit
+2024-07-01 15:17:51,827 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: server_info
+2024-07-01 15:17:51,828 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: poll_exit
+2024-07-01 15:17:51,829 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: server_info
+2024-07-01 15:17:51,829 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: get_summary
+2024-07-01 15:17:51,832 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: sampled_history
+2024-07-01 15:17:51,832 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: internal_messages
+2024-07-01 15:17:51,873 DEBUG   SenderThread:14901 [sender.py:send_request():406] send_request: poll_exit
+2024-07-01 15:17:51,874 INFO    MainThread:14901 [wandb_run.py:_footer_history_summary_info():4008] rendering history
+2024-07-01 15:17:51,875 INFO    MainThread:14901 [wandb_run.py:_footer_history_summary_info():4040] rendering summary
+2024-07-01 15:17:51,875 INFO    MainThread:14901 [wandb_run.py:_footer_sync_info():3967] logging synced files
+2024-07-01 15:17:51,877 DEBUG   HandlerThread:14901 [handler.py:handle_request():158] handle_request: shutdown
+2024-07-01 15:17:51,877 INFO    HandlerThread:14901 [handler.py:finish():882] shutting down handler
+2024-07-01 15:17:52,829 INFO    WriterThread:14901 [datastore.py:close():296] close: /nfs/lambda_stor_01/homes/jkobza/projects/recurrentgemma_experiments/training/wandb/run-20240701_151542-011ucwcy/run-011ucwcy.wandb
+2024-07-01 15:17:52,874 INFO    SenderThread:14901 [sender.py:finish():1608] shutting down sender
+2024-07-01 15:17:52,874 INFO    SenderThread:14901 [file_pusher.py:finish():169] shutting down file pusher
+2024-07-01 15:17:52,874 INFO    SenderThread:14901 [file_pusher.py:join():175] waiting for file pusher

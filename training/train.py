@@ -19,7 +19,7 @@ import wandb
 #         "learning_rate":2e-3,
 #         "b2":0.96,
 #         "num_epochs":1,
-#         "eval_every_n":20,
+#         "eval_every_n":10,
 #         "batch_size":1,
 #         "max_steps":1000,
 #     }
@@ -86,27 +86,31 @@ def forward_and_loss_fn(
     positions,
     image
 ):
-
+    print(input_tokens)
     
     logits, _ = model(tokens=input_tokens, segment_pos=positions, cache=None, img_path=image)
-    
     logits = logits[0, :-1]
+
+
 
     target_tokens = input_tokens[1:]
     target_mask = input_mask[1:]
     
+    print(target_tokens.shape)
+    print(target_mask.shape)
+    
     one_hot = torch.nn.functional.one_hot(target_tokens.to(torch.int64), logits.shape[-1])
     
-    print(one_hot)
-    one_hot = one_hot * _tf_to_torch(target_mask).to(one_hot.dtype)[..., None]
-    print(one_hot)
     
-    norm_factor = 1 / (torch.sum(_tf_to_torch(target_mask)) + 1e-8)
+    one_hot = one_hot * _tf_to_torch(target_mask).to(one_hot.dtype)[..., None]
+    
+    
+    norm_factor = 1 / (torch.sum(_tf_to_torch(target_mask)))
     
     norm = torch.nn.Softmax()
     
     
-    one_hot = torch.cat((one_hot, torch.zeros((1,256_000))), dim=0).to(logits.device)
+    # one_hot = torch.cat((one_hot, torch.zeros((1,256_000))), dim=0).to(logits.device)
     
     
     return -torch.sum((norm(logits)) * one_hot) * norm_factor
@@ -144,6 +148,7 @@ def train_step(
     optimizer,
     pad_id,
     example,
+    step
 ):
     
     
@@ -151,11 +156,14 @@ def train_step(
     
     torch_tokens = _tf_to_torch(example[0].input_tokens)
         
-    optimizer.zero_grad()
+    
     
     train_loss = forward_and_loss_fn(params, model=model, input_tokens=torch_tokens, input_mask=example[0].target_mask, positions=positions, image="../data/train/train/" + example[0].image)
     train_loss.backward()
-    optimizer.step()
+    
+    if(step % 4 == 0):
+        optimizer.step()
+        optimizer.zero_grad()
     
     
     return train_loss
@@ -259,6 +267,7 @@ def train_loop(
             optimizer=optimizer,
             pad_id=dataset_builder._tokenizer.pad_id,
             example=train_example,
+            step=n_steps
         )
 
         n_steps += 1
@@ -411,6 +420,9 @@ class DatasetBuilder:
 
         # We don't want to perform the backward on the pad tokens.
         mask = self._pad_up_to_max_len(mask, False)
+        # mask = _tf_to_torch(mask)
+        # Add 1 extra mask for img
+        # mask = torch.cat((mask[:1], torch.Tensor([False]), mask[1:]))
 
         return TrainingInput(image=image, input_tokens=tokens, target_mask=mask)
     
@@ -447,8 +459,7 @@ class DatasetBuilder:
 
         # Same as the training dataset, but no shuffling and no repetition
         ds = self._base_data[DatasetSplit.VALIDATION]["train"]
-        print(ds)
-        print(type(ds))
+
         
         valid = []
         
@@ -469,6 +480,8 @@ if __name__ == "__main__":
     vocab.load("../model/tokenizer.model")
     
     tokenizer = Tokenizer(vocab)
+    
+    # print(tokenizer.to_string([]))
     
     device = "cuda:1"
     
@@ -530,7 +543,7 @@ if __name__ == "__main__":
     SEQ_SIZE = 25
     training_cfg = TrainingConfig(
         optimizer='AdamW',
-        learning_rate=2e-3,
+        learning_rate=1e-5,
         b2=0.96,
         num_epochs=1,
         eval_every_n=10,

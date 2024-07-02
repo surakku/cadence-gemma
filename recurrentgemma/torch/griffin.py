@@ -176,7 +176,7 @@ class Griffin(nn.Module):
         dog = self.vis_encoder(img_path)
         dog = self.projector(dog).to(bfloat16)
         dog = dog[None, :, :]
-        x = torch.cat([x[:, :1, :], dog, x[:, 1:, :]], dim=1)
+        x = torch.cat((dog, x), dim=1)
 
 
     new_cache = {}
