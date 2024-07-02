@@ -16,7 +16,7 @@ import wandb
 #     # track hyperparameters and run metadata
 #     config={
 #         "optimizer":'AdamW',
-#         "learning_rate":2e-3,
+#         "learning_rate":2e-5,
 #         "b2":0.96,
 #         "num_epochs":1,
 #         "eval_every_n":10,
@@ -86,28 +86,38 @@ def forward_and_loss_fn(
     positions,
     image
 ):
+    
     print(input_tokens)
     
     logits, _ = model(tokens=input_tokens, segment_pos=positions, cache=None, img_path=image)
     logits = logits[0, :-1]
+    
+    print(logits)
+    # idx = 1
+    # for l in logits:
+    #     print(l[input_tokens[idx]])
+    #     idx+=1
 
+    # for l in logits:
+    #     print("\n\n",torch.argmax(l), input_tokens[idx],"\n\n")
+    #     idx+=1
+    target_tokens = input_tokens
+    target_mask = input_mask
 
-
-    target_tokens = input_tokens[1:]
-    target_mask = input_mask[1:]
     
-    print(target_tokens.shape)
-    print(target_mask.shape)
+    # print(logits.shape)
+    # print(target_tokens.shape)
+    # print(target_mask.shape)
     
-    one_hot = torch.nn.functional.one_hot(target_tokens.to(torch.int64), logits.shape[-1])
+    one_hot = torch.nn.functional.one_hot(target_tokens.to(torch.int64), logits.shape[-1]).to(logits.device)
     
     
-    one_hot = one_hot * _tf_to_torch(target_mask).to(one_hot.dtype)[..., None]
+    one_hot = one_hot * _tf_to_torch(target_mask).to(one_hot.dtype).to(one_hot.device)[..., None]
     
     
     norm_factor = 1 / (torch.sum(_tf_to_torch(target_mask)))
     
-    norm = torch.nn.Softmax()
+    norm = torch.nn.LogSoftmax()
     
     
     # one_hot = torch.cat((one_hot, torch.zeros((1,256_000))), dim=0).to(logits.device)
@@ -161,7 +171,7 @@ def train_step(
     train_loss = forward_and_loss_fn(params, model=model, input_tokens=torch_tokens, input_mask=example[0].target_mask, positions=positions, image="../data/train/train/" + example[0].image)
     train_loss.backward()
     
-    if(step % 4 == 0):
+    if(step % 1 == 0):
         optimizer.step()
         optimizer.zero_grad()
     
@@ -272,6 +282,7 @@ def train_loop(
 
         n_steps += 1
         avg_loss += train_loss
+        # wandb.log({"train_loss": avg_loss})
         if n_steps % training_cfg.eval_every_n == 0:
             eval_loss = 0
 
@@ -287,7 +298,7 @@ def train_loop(
             avg_loss /= training_cfg.eval_every_n
             eval_loss /= n_steps_eval + 1e-8
             print(f"STEP {n_steps} training loss: {avg_loss} - eval loss: {eval_loss}")
-            # wandb.log({"train_loss": avg_loss, "eval_loss":eval_loss})
+            # wandb.log({"eval_loss":eval_loss})
             avg_loss=0
         if training_cfg.max_steps is not None and n_steps > training_cfg.max_steps:
             break
@@ -481,6 +492,16 @@ if __name__ == "__main__":
     
     tokenizer = Tokenizer(vocab)
     
+    print(tokenizer.to_string([  1841,   1721,    736,   5299,   1931, 235336,    549,  13072,    887,
+             1,      0,      0,      0,      0,      0,      0,      0,      0,
+             0,      0,      0,      0,      0,      0,      0,      0,      0,
+             0,      0,      0]))
+
+    print(tokenizer.to_string([    0,     0,     0,     0,     0,     0,   549, 13072,   887,     1,
+            0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+            0,     0,     0,     0,     0,     0,     0,     0,     0,     0]))
+    
+    
     # print(tokenizer.to_string([]))
     
     device = "cuda:1"
@@ -532,18 +553,17 @@ if __name__ == "__main__":
     for name, param in model.named_parameters():
       if param.requires_grad:
           print(name)
+          
     
     
-    print(len(ds[0]))
+
     
     # output = sampler(["No matter what was just said, respond with \"Yes sir\""], 100, img_path="/homes/jkobza/projects/recurrentgemma_experiments/recurrentgemma/vit/img_tests/dog.jpg")
     # print(output)
     
-    # Small seq size so that everything fits in memory
-    SEQ_SIZE = 25
     training_cfg = TrainingConfig(
         optimizer='AdamW',
-        learning_rate=1e-5,
+        learning_rate=2e-7,
         b2=0.96,
         num_epochs=1,
         eval_every_n=10,
