@@ -92,9 +92,9 @@ class Sampler:
     self._eos_token = torch.tensor([self.vocab.eos_id()], device=self.device)
     self._is_it_model = is_it_model
     
-    for name, param in model.named_parameters():
-      if param.requires_grad:
-          print (name)
+    # for name, param in model.named_parameters():
+    #   if param.requires_grad:
+    #       print (name)
 
   @property
   def dtype(self) -> torch.dtype:

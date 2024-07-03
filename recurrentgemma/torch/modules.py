@@ -74,6 +74,7 @@ def _apply_rope(
   timescale = max_wavelength**freq_exponents
   inv_frequencies = 1.0 / timescale
 
+  inv_frequencies = inv_frequencies.to(positions.device)
   sinusoid_imp = positions * inv_frequencies
   sin = torch.sin(sinusoid_imp).type_as(inputs)
   cos = torch.cos(sinusoid_imp).type_as(inputs)
@@ -238,8 +239,10 @@ def _roll_tensor(
       idx = idx[..., None]
     idx = idx.expand(*x.shape)
     if i == dim:
+      shifts = shifts.to(x.device)
       idx = (idx - shifts) % x.shape[dim]
     indexes.append(idx)
+  indexes = tuple(tensor.to(torch.int32) for tensor in indexes)
   return x[tuple(indexes)]
 
 
@@ -417,6 +420,8 @@ class LocalAttentionBlock(nn.Module):
       the input sequence.
     """
     b, t, _ = x.shape
+    if(b == 1):
+      segment_pos = segment_pos[None, :]
     assert segment_pos.shape == (b, t), segment_pos.shape
 
     # Generate keys, values and queries.
@@ -463,6 +468,7 @@ class LocalAttentionBlock(nn.Module):
     # Expand for heads axis.
     attn_mask = torch.unsqueeze(attn_mask, dim=1)
 
+    logits = logits.to(attn_mask.device)
     masked_logits = torch.where(attn_mask, logits, _MIN_LOGITS_VALUE)
     masked_logits = masked_logits.type(torch.float32)
 
