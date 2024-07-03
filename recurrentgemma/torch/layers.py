@@ -332,8 +332,10 @@ class RGLRU(nn.Module):
     Returns:
       Output of the block together with the updated hidden state.
     """
-
     bs, l, _ = x.shape
+    if(bs == 1):
+      segment_pos = segment_pos[None, :]
+
     assert segment_pos.shape == (bs, l)
     reset = segment_pos == 0
 
@@ -352,6 +354,8 @@ class RGLRU(nn.Module):
     # Apply gamma normalization to the input. We need to clip the derivatives of
     # `sqrt` in order to prevent NaNs during training in bfloat16.
     multiplier = SqrtBoundDerivative.apply(1 - a_square)
+    multiplier = multiplier.to(gated_x.device)
+    reset = reset.to(gated_x.device)
     multiplier = reset[..., None] + ~reset[..., None] * multiplier
     normalized_x = gated_x * multiplier.type(x.dtype)
 
@@ -535,7 +539,6 @@ class Conv1D(nn.Module):
     new_cache = x[:, 1 - self.temporal_width :].type(cache_dtype)
     new_cache = self._pad_cache(new_cache)
 
-    print("CONV OUT !!!!", convolution_output)
 
     return convolution_output, new_cache
 
