@@ -2,7 +2,7 @@ from sys import modules
 import torch.nn as nn
 
 class MLPProjector(nn.Module):
-    def __init__(self, device="cuda:1", hidden_depth=2):
+    def __init__(self, device="cuda", hidden_depth=2):
         super().__init__()
         
         self.device = device

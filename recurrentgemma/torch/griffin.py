@@ -176,6 +176,7 @@ class Griffin(nn.Module):
         dog = self.vis_encoder(img_path)
         dog = self.projector(dog).to(bfloat16)
         dog = dog[None, :, :]
+        dog = dog.to(x.device)
         x = torch.cat((dog, x), dim=1)
 
 

@@ -45,7 +45,7 @@ class VisionEncoder(nn.Module):
     target_sizeL: tuple
         Final resolution of images."""
         
-    def __init__(self, is_training=False, device="cuda:1", default_image_size=384):
+    def __init__(self, is_training=False, device="cuda", default_image_size=384):
         
         super().__init__()
         

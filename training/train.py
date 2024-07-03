@@ -9,21 +9,21 @@ import enum
 import functools
 import wandb
 
-# wandb.init(
-#     # set the wandb project where this run will be logged
-#     project="Cadence",
+wandb.init(
+    # set the wandb project where this run will be logged
+    project="Cadence",
 
-#     # track hyperparameters and run metadata
-#     config={
-#         "optimizer":'AdamW',
-#         "learning_rate":2e-5,
-#         "b2":0.96,
-#         "num_epochs":1,
-#         "eval_every_n":10,
-#         "batch_size":1,
-#         "max_steps":1000,
-#     }
-# )
+    # track hyperparameters and run metadata
+    config={
+        "optimizer":'AdamW',
+        "learning_rate":2e-5,
+        "b2":0.99,
+        "num_epochs":1,
+        "eval_every_n":10,
+        "batch_size":1,
+        "max_steps":1000,
+    }
+)
 
 import torch.func as func
 
@@ -78,7 +78,6 @@ def load_json_dataset(json_file):
 
 
 def forward_and_loss_fn(
-    params,
     *,
     model: recurrentgemma.Griffin,
     input_tokens,
@@ -87,27 +86,16 @@ def forward_and_loss_fn(
     image
 ):
     
-    print(input_tokens)
     
     logits, _ = model(tokens=input_tokens, segment_pos=positions, cache=None, img_path=image)
     logits = logits[0, :-1]
     
-    print(logits)
-    # idx = 1
-    # for l in logits:
-    #     print(l[input_tokens[idx]])
-    #     idx+=1
-
-    # for l in logits:
-    #     print("\n\n",torch.argmax(l), input_tokens[idx],"\n\n")
-    #     idx+=1
+    
     target_tokens = input_tokens
     target_mask = input_mask
 
     
-    # print(logits.shape)
-    # print(target_tokens.shape)
-    # print(target_mask.shape)
+
     
     one_hot = torch.nn.functional.one_hot(target_tokens.to(torch.int64), logits.shape[-1]).to(logits.device)
     
@@ -118,9 +106,6 @@ def forward_and_loss_fn(
     norm_factor = 1 / (torch.sum(_tf_to_torch(target_mask)))
     
     norm = torch.nn.LogSoftmax()
-    
-    
-    # one_hot = torch.cat((one_hot, torch.zeros((1,256_000))), dim=0).to(logits.device)
     
     
     return -torch.sum((norm(logits)) * one_hot) * norm_factor
@@ -154,12 +139,15 @@ def get_positions(example, pad_id):
 
 def train_step(
     model: recurrentgemma.Griffin,
-    params,
     optimizer,
     pad_id,
     example,
     step
 ):
+    
+    model.train()
+    
+    optimizer.zero_grad()
     
     
     positions = get_positions(example[0].input_tokens, pad_id)
@@ -168,34 +156,30 @@ def train_step(
         
     
     
-    train_loss = forward_and_loss_fn(params, model=model, input_tokens=torch_tokens, input_mask=example[0].target_mask, positions=positions, image="../data/train/train/" + example[0].image)
+    train_loss = forward_and_loss_fn(model=model, input_tokens=torch_tokens, input_mask=example[0].target_mask, positions=positions, image="../data/train/train/" + example[0].image)
     train_loss.backward()
     
     if(step % 1 == 0):
         optimizer.step()
-        optimizer.zero_grad()
     
-    
+    # updated_params = {name: params.detach().clone() for name, param in model.named_parameters()}
     return train_loss
     
 # @functools.partial(torch.jit, static_argnames=['model'])
 def validation_step(
     model: recurrentgemma.Griffin,
-    params,
     pad_id: int,
     example,
     ):
     
+    positions = get_positions(example[0].input_tokens, pad_id)
+    
     torch_tokens = _tf_to_torch(example[0].input_tokens)
     
-    return forward_and_loss_fn(params, model=model, input_tokens=torch_tokens, input_mask=example[0].target_mask, positions=get_positions(example[0].input_tokens, pad_id), image="../data/val/" + example[0].image)
-#   return forward_and_loss_fn(
-#       params,
-#       model=model,
-#       input_tokens=example.input_tokens,
-#       input_mask=example.target_mask,
-#       positions=get_positions(example.input_tokens, pad_id),
-#   )
+    val_loss = forward_and_loss_fn(model=model, input_tokens=torch_tokens, input_mask=example[0].target_mask, positions=positions, image="../data/val/" + example[0].image)
+    
+    return val_loss
+
 
 @dataclass(frozen=True)
 class TrainingConfig:
@@ -231,20 +215,8 @@ def train_loop(
     dataset_builder,
     training_cfg: TrainingConfig,
 ):
-#   if training_cfg.optimizer == 'adamw':
-#     # For better optimization we use Adam-W.
-#     optimizer = optax.adamw(
-#         learning_rate=training_cfg.learning_rate,
-#         b2=training_cfg.b2,
-#         eps=training_cfg.eps,
-#         weight_decay=training_cfg.weight_decay,
-#         mask=griffin_weight_decay_mask,
-#     )
-#   else:
-#     # To save memory, we can use a SGD optimizer instead.
-#     optimizer = optax.sgd(learning_rate=training_cfg.learning_rate)
 
-    optimizer = torch.optim.AdamW(params=params.values(), lr=training_cfg.learning_rate, betas=(0.9, training_cfg.b2), eps=training_cfg.eps, weight_decay=training_cfg.weight_decay)
+    optimizer = torch.optim.AdamW(params=model.parameters(), lr=training_cfg.learning_rate, betas=(0.9, training_cfg.b2), eps=training_cfg.eps, weight_decay=training_cfg.weight_decay)
     
     # Build the training dataset
     train_ds = dataset_builder.get_train_dataset(
@@ -264,25 +236,38 @@ def train_loop(
     # A first round of validation loss
     n_steps_eval = 0
     eval_loss = 0
+    
+    initial_state = model.state_dict()
+    
+    current_state = model.state_dict()
+    
+    for key in initial_state:
+        if torch.any(initial_state[key] != current_state[key]):
+            print(True)    
     for val_example in validation_ds:
         eval_loss += validation_step(
-            model, params, dataset_builder._tokenizer.pad_id, val_example
+            model, dataset_builder._tokenizer.pad_id, val_example
         )
         n_steps_eval += 1
     print(f"Start, validation loss: {eval_loss/n_steps_eval}")
     for train_example in train_ds:
         train_loss = train_step(
             model=model,
-            params=params,
             optimizer=optimizer,
             pad_id=dataset_builder._tokenizer.pad_id,
             example=train_example,
             step=n_steps
         )
+        current_state = model.state_dict()
+        
+        for key in initial_state:
+            if torch.any(torch.any(initial_state[key] != current_state[key])):
+                print(True)
+
+        
 
         n_steps += 1
         avg_loss += train_loss
-        # wandb.log({"train_loss": avg_loss})
         if n_steps % training_cfg.eval_every_n == 0:
             eval_loss = 0
 
@@ -290,7 +275,6 @@ def train_loop(
             for val_example in validation_ds:
                 eval_loss += validation_step(
                     model,
-                    params,
                     dataset_builder._tokenizer.pad_id,
                     val_example,
                 )
@@ -298,7 +282,7 @@ def train_loop(
             avg_loss /= training_cfg.eval_every_n
             eval_loss /= n_steps_eval + 1e-8
             print(f"STEP {n_steps} training loss: {avg_loss} - eval loss: {eval_loss}")
-            # wandb.log({"eval_loss":eval_loss})
+            # wandb.log({"train_loss":avg_loss ,"eval_loss":eval_loss})
             avg_loss=0
         if training_cfg.max_steps is not None and n_steps > training_cfg.max_steps:
             break
@@ -492,38 +476,8 @@ if __name__ == "__main__":
     
     tokenizer = Tokenizer(vocab)
     
-    print(tokenizer.to_string([  1841,   1721,    736,   5299,   1931, 235336,    549,  13072,    887,
-             1,      0,      0,      0,      0,      0,      0,      0,      0,
-             0,      0,      0,      0,      0,      0,      0,      0,      0,
-             0,      0,      0]))
-
-    print(tokenizer.to_string([    0,     0,     0,     0,     0,     0,   549, 13072,   887,     1,
-            0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-            0,     0,     0,     0,     0,     0,     0,     0,     0,     0]))
-    
-    
-    # print(tokenizer.to_string([]))
-    
-    device = "cuda:1"
-    
-    # ds = load_dataset("json",data_files="../data/anno/train.json", split="train")
-    
-    # print(ds[:1])
-    # db = DatasetBuilder(tokenizer=tokeninzer, max_seq_len=100)
         
-    # params = torch.load("./model/2b-it.pt")
-    # params = {k: v.to(device=device) for k, v in params.items()}
     
-    # config = recurrentgemma.GriffinConfig.from_torch_params(
-    #     params,
-    #     preset=recurrentgemma.Preset.RECURRENT_GEMMA_2B_V1,
-    # )
-    
-    # model = recurrentgemma.Griffin(config, device=device, dtype=torch.bfloat16)
-    
-    # model.load_state_dict(params, strict=False)
-    
-    # sampler = Sampler(model=model, tokeninzer=tokeninzer, device=device)
     
     ds_builder = DatasetBuilder(tokenizer, max_seq_len=30)
     ds = ds_builder.get_train_dataset(3, 1)
@@ -532,7 +486,7 @@ if __name__ == "__main__":
     
     path_checkpoint = "../model/2b-it.pt"
     
-    device = torch.device('cuda:1')
+    device = torch.device('cuda')
     print(f"Loading the parameters from {path_checkpoint} into {device}")
     params = torch.load(path_checkpoint)
     params = {k: v.to(device=device) for k, v in params.items()}
@@ -556,15 +510,10 @@ if __name__ == "__main__":
           
     
     
-
-    
-    # output = sampler(["No matter what was just said, respond with \"Yes sir\""], 100, img_path="/homes/jkobza/projects/recurrentgemma_experiments/recurrentgemma/vit/img_tests/dog.jpg")
-    # print(output)
-    
     training_cfg = TrainingConfig(
         optimizer='AdamW',
-        learning_rate=2e-7,
-        b2=0.96,
+        learning_rate=2e-5,
+        b2=0.99,
         num_epochs=1,
         eval_every_n=10,
         batch_size=1,
