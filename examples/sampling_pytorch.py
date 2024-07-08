@@ -70,6 +70,7 @@ def _load_and_sample(
   device = torch.device('cuda:1')
   print(f"Loading the parameters from {path_checkpoint}")
   params = torch.load(path_checkpoint)
+  
   params = {k: v.to(device=device) for k, v in params.items()}
   print("Parameters loaded.")
   # Create a sampler with the right param shapes.
@@ -85,7 +86,7 @@ def _load_and_sample(
   sampler_output = sampler(
       input_strings=[input_string],
       total_generation_steps=total_generation_steps,
-      img_path = "/homes/jkobza/projects/recurrentgemma_experiments/recurrentgemma/vit/img_tests/dog.jpg"
+      img_path = "/home/jkobza/cadence/cadence-gemma/recurrentgemma/vit/img_tests/dog.jpg"
   )
 
   print(f"Input string: {input_string}")

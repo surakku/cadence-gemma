@@ -6,6 +6,12 @@ import torch.nn as nn
 from torchvision.transforms import Compose, Resize
 
 
+def pil_loader(path):
+    # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
+    with open(path, 'rb') as f:
+        img = Image.open(f)
+        return img.convert('RGB')
+
 
 class VisionEncoder(nn.Module):
     """Combined SigLIP-DINOv2 vision encoder.
@@ -45,7 +51,7 @@ class VisionEncoder(nn.Module):
     target_sizeL: tuple
         Final resolution of images."""
         
-    def __init__(self, is_training=False, device="cuda", default_image_size=384):
+    def __init__(self, is_training=False, device="cuda:1", default_image_size=384):
         
         super().__init__()
         
@@ -130,11 +136,15 @@ class VisionEncoder(nn.Module):
         logits: torch.Tensor
             Encoded image features."""
         
-        img = Image.open(img_path)
+        img = pil_loader(img_path)
+        dino_fix = self.dino(self.dino_transform(img).to(self.device).unsqueeze(0))
+
+        
+        siglip_fix = self.siglip(self.siglip_transform(img).to(self.device).unsqueeze(0))
 
 
-        logits = cat([self.dino(self.dino_transform(img).to(self.device).unsqueeze(0)),
-                      self.siglip(self.siglip_transform(img).to(self.device).unsqueeze(0))], dim=1)
+        logits = cat([dino_fix,
+                      siglip_fix], dim=1)
         return logits
         
 

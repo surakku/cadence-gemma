@@ -45,37 +45,13 @@ from numpy import dtype
 import torch
 
 # We will use tensorflow to handle the dataset
-import tensorflow as tf
-import tensorflow_datasets as tfds
 from datasets import load_dataset
 
 # Finally, we import Recurrentgemma.
 import sentencepiece as spm
 from recurrentgemma import torch as recurrentgemma
-def tokenize_source(tokenizer, example: tf.Tensor):
-  return tokenizer.tokenize_tf_op(
-      example,
-      add_eos=False
-  )
+
   
-def tokenize_destination(tokenizer, example: tf.Tensor):
-  return tokenizer.tokenize_tf_op(example, add_eos=True)
-
-def load_json_dataset(json_file):
-    # Load JSON data from file
-    with open(json_file, 'r') as f:
-        data = json.load(f)
-    
-    # Extract features and labels from JSON data (example)
-    imgs = [entry['image'] for entry in data]
-    qs = [entry['question'] for entry in data]
-    ans = [entry['answers'][0]['answer'] for entry in data]
-    # Create TensorFlow Dataset from extracted features and labels
-    dataset = tf.data.Dataset.from_tensor_slices((imgs, qs, ans))
-    
-
-    return dataset
-
 
 def forward_and_loss_fn(
     *,
@@ -156,7 +132,7 @@ def train_step(
         
     
     
-    train_loss = forward_and_loss_fn(model=model, input_tokens=torch_tokens, input_mask=example[0].target_mask, positions=positions, image="../data/train/train/" + example[0].image)
+    train_loss = forward_and_loss_fn(model=model, input_tokens=torch_tokens, input_mask=example[0].target_mask, positions=positions, image=example[0].image)
     train_loss.backward()
     
     if(step % 1 == 0):
@@ -237,13 +213,6 @@ def train_loop(
     n_steps_eval = 0
     eval_loss = 0
     
-    initial_state = model.state_dict()
-    
-    current_state = model.state_dict()
-    
-    for key in initial_state:
-        if torch.any(initial_state[key] != current_state[key]):
-            print(True)    
     for val_example in validation_ds:
         eval_loss += validation_step(
             model, dataset_builder._tokenizer.pad_id, val_example
@@ -258,12 +227,8 @@ def train_loop(
             example=train_example,
             step=n_steps
         )
-        current_state = model.state_dict()
+        print(train_loss)
         
-        for key in initial_state:
-            if torch.any(torch.any(initial_state[key] != current_state[key])):
-                print(True)
-
         
 
         n_steps += 1
@@ -282,8 +247,13 @@ def train_loop(
             avg_loss /= training_cfg.eval_every_n
             eval_loss /= n_steps_eval + 1e-8
             print(f"STEP {n_steps} training loss: {avg_loss} - eval loss: {eval_loss}")
-            # wandb.log({"train_loss":avg_loss ,"eval_loss":eval_loss})
+            wandb.log({"train_loss":avg_loss ,"eval_loss":eval_loss})
             avg_loss=0
+            
+        if n_steps % 100 == 0:
+            torch.save({
+                "params": model.state_dict()
+            }, "./model_v1_18hr.pt")
         if training_cfg.max_steps is not None and n_steps > training_cfg.max_steps:
             break
     return params
@@ -309,20 +279,6 @@ class Tokenizer():
             int_list.append(self._spm_processor.eos_id())
         return int_list
 
-    def tokenize_tf_op(
-        self,
-        str_tensor: tf.Tensor,
-        prefix: str = '',
-        suffix: str = '',
-        add_eos: bool = True,
-    ) -> tf.Tensor:
-        """Tensforflow operator for the tokenize function."""
-        encoded = tf.numpy_function(
-            self.tokenize,
-            [str_tensor, add_eos],
-            tf.int32)
-        encoded.set_shape([None])
-        return encoded
 
     def to_string(self, tokens) -> str:
         """Convert an array of tokens to a string."""
@@ -343,6 +299,10 @@ class TrainingInput:
 class DatasetSplit(enum.Enum):
   TRAIN = 'train'
   VALIDATION = 'valid'
+  LLAVA_IT = "llava_it"
+  LVIS_IT = "lvis_it"
+  LRV = "lrv"
+  DVQA = "dvqa"
   
 class DatasetBuilder:
      
@@ -362,31 +322,27 @@ class DatasetBuilder:
         
         self._base_data = {
             DatasetSplit.TRAIN: load_dataset("../data/anno", data_files="train.json"),
-            DatasetSplit.VALIDATION: load_dataset("../data/anno",data_files="val.json"),
+            DatasetSplit.VALIDATION: load_dataset("../data/anno", data_files="val.json"),
+            DatasetSplit.LLAVA_IT: load_dataset("/lus/eagle/projects/argonne_tpc/jkobza/data", data_files="llava_instruct_150k.json"),
+            DatasetSplit.LVIS_IT: load_dataset("/lus/eagle/projects/argonne_tpc/jkobza/data", data_files="lvis_instruct4v_220k.json"),
+            DatasetSplit.LRV: load_dataset("/lus/eagle/projects/argonne_tpc/jkobza/data/LRV", data_files="filter_cap1.json"),
+            DatasetSplit.DVQA: load_dataset("/lus/eagle/projects/argonne_tpc/jkobza/data/DVQA", data_files="train_qa.json"),
         }
         self._max_seq_len = max_seq_len
 
-    def _tokenize_source(self, example: tf.Tensor):
-        """Tokenization function for the source."""
-        return self._tokenizer.tokenize_tf_op(
-            example,
-            add_eos=False
-        )
 
-    def _tokenize_destination(self, example: tf.Tensor):
-        """Tokenization function for the French translation."""
-        return self._tokenizer.tokenize_tf_op(example, add_eos=True)
     
 
     def _pad_up_to_max_len(self,
-        input_tensor: tf.Tensor,
+        input_tensor,
         pad_value: int | bool,
-    ) -> tf.Tensor:
+    ):
         """Pad the given tensor up to sequence length of a batch."""
-        seq_len = tf.shape(input_tensor)[0]
-        to_pad = tf.maximum(self._max_seq_len - seq_len, 0)
-        return tf.pad(
-        input_tensor, [[0, to_pad]], mode='CONSTANT', constant_values=pad_value,
+        
+        seq_len = input_tensor.shape[0]
+        to_pad = np.maximum(self._max_seq_len - seq_len, 0)
+        return torch.nn.functional.pad(
+        input_tensor, (0, to_pad), mode='constant', value=pad_value,
         )
         
         
@@ -394,47 +350,177 @@ class DatasetBuilder:
     def _to_training_input(
         self,
         image,
-        src_tokens: torch.Tensor,
-        dst_tokens: torch.Tensor,
+        src_tokens,
+        dst_tokens,
+        set: str
     ) -> TrainingInput:
         """Build a training input from a tuple of source and destination tokens."""
+        
+        if set == "llava_it":
+            ins = []
+            for idx in range(len(src_tokens)):
+                src_tensor = torch.Tensor(src_tokens[idx]).to(torch.int64).to("cpu")
+                dst_tensor = torch.Tensor(dst_tokens[idx]).to(torch.int64).to("cpu")
+                
+                tokens = torch.concat([src_tensor, dst_tensor], axis=0)
 
-        # The input sequence fed to the model is simply the concatenation of the
-        # source and the destination.
-        tokens = torch.concat([src_tokens, dst_tokens], axis=0)
+        
+                q_mask = torch.zeros_like(src_tensor, dtype=torch.bool)
+                a_mask = torch.ones_like(dst_tensor, dtype=torch.bool)
+                mask = torch.concat([q_mask, a_mask], axis=0)
+                
+                tokens = self._pad_up_to_max_len(tokens, self._tokenizer.pad_id)
+                mask = self._pad_up_to_max_len(mask, False)
+                ins.append(TrainingInput(image="/lus/eagle/projects/argonne_tpc/jkobza/data/coco/train2014/COCO_train2014_"+image, input_tokens=tokens, target_mask=mask))
+            return ins
 
-        # We want to prevent the model from updating based on the source (input)
-        # tokens. To achieve this, we add a target mask to each input.
-        q_mask = torch.zeros_like(src_tokens, dtype=torch.bool)
-        a_mask = torch.ones_like(dst_tokens, dtype=torch.bool)
-        mask = torch.concat([q_mask, a_mask], axis=0)
+        if set == "lvis_it":
+            ins = []
+            for idx in range(len(src_tokens)):
+                src_tensor = torch.Tensor(src_tokens[idx]).to(torch.int64).to("cpu")
+                dst_tensor = torch.Tensor(dst_tokens[idx]).to(torch.int64).to("cpu")
+                
+                tokens = torch.concat([src_tensor, dst_tensor], axis=0)
 
-        # If the output tokens sequence is smaller than the target sequence size,
-        # then we pad it with pad tokens.
-        tokens = self._pad_up_to_max_len(tokens, self._tokenizer.pad_id)
+        
+                q_mask = torch.zeros_like(src_tensor, dtype=torch.bool)
+                a_mask = torch.ones_like(dst_tensor, dtype=torch.bool)
+                mask = torch.concat([q_mask, a_mask], axis=0)
+                
+                tokens = self._pad_up_to_max_len(tokens, self._tokenizer.pad_id)
+                mask = self._pad_up_to_max_len(mask, False)
+                ins.append(TrainingInput(image="/lus/eagle/projects/argonne_tpc/jkobza/data/"+image, input_tokens=tokens, target_mask=mask))
+            return ins
 
-        # We don't want to perform the backward on the pad tokens.
-        mask = self._pad_up_to_max_len(mask, False)
-        # mask = _tf_to_torch(mask)
-        # Add 1 extra mask for img
-        # mask = torch.cat((mask[:1], torch.Tensor([False]), mask[1:]))
+        if set == "lrv":
+            src_tensor = torch.Tensor(src_tokens).to(torch.int64).to("cpu")
+            dst_tensor = torch.Tensor(dst_tokens).to(torch.int64).to("cpu")
+            
+            tokens = torch.concat([src_tensor, dst_tensor], axis=0)
 
-        return TrainingInput(image=image, input_tokens=tokens, target_mask=mask)
+    
+            q_mask = torch.zeros_like(src_tensor, dtype=torch.bool).to("cpu")
+            a_mask = torch.ones_like(dst_tensor, dtype=torch.bool).to("cpu")
+            mask = torch.concat([q_mask, a_mask], axis=0)
+            
+            tokens = self._pad_up_to_max_len(tokens, self._tokenizer.pad_id)
+            mask = self._pad_up_to_max_len(mask, False)
+            return TrainingInput(image="/lus/eagle/projects/argonne_tpc/jkobza/data/LRV/image/"+image+".jpg", input_tokens=tokens, target_mask=mask)
+
+        if set == "dvqa":
+            src_tensor = torch.Tensor(src_tokens).to(torch.int64).to("cpu")
+            dst_tensor = torch.Tensor(dst_tokens).to(torch.int64).to("cpu")
+            
+            tokens = torch.concat([src_tensor, dst_tensor], axis=0)
+
+    
+            q_mask = torch.zeros_like(src_tensor, dtype=torch.bool)
+            a_mask = torch.ones_like(dst_tensor, dtype=torch.bool)
+            mask = torch.concat([q_mask, a_mask], axis=0)
+            
+            tokens = self._pad_up_to_max_len(tokens, self._tokenizer.pad_id)
+            mask = self._pad_up_to_max_len(mask, False)
+            return TrainingInput(image="/lus/eagle/projects/argonne_tpc/jkobza/data/DVQA/images/" + image, input_tokens=tokens, target_mask=mask)        
+
+        
+        if set == "vizwiz":
+            # The input sequence fed to the model is simply the concatenation of the
+            # source and the destination.
+            tokens = torch.concat([src_tokens, dst_tokens], axis=0)
+
+            # We want to prevent the model from updating based on the source (input)
+            # tokens. To achieve this, we add a target mask to each input.
+            q_mask = torch.zeros_like(src_tokens, dtype=torch.bool)
+            a_mask = torch.ones_like(dst_tokens, dtype=torch.bool)
+            mask = torch.concat([q_mask, a_mask], axis=0)
+
+            # If the output tokens sequence is smaller than the target sequence size,
+            # then we pad it with pad tokens.
+            tokens = self._pad_up_to_max_len(tokens, self._tokenizer.pad_id)
+
+            # We don't want to perform the backward on the pad tokens.
+            mask = self._pad_up_to_max_len(mask, False)
+            # mask = _tf_to_torch(mask)
+            # Add 1 extra mask for img
+            # mask = torch.cat((mask[:1], torch.Tensor([False]), mask[1:]))
+            if("train" in image):
+                return TrainingInput(image="../data/train/train/" + image, input_tokens=tokens, target_mask=mask)
+            if("val" in image):
+                return TrainingInput(image="../val/" + image, input_tokens=tokens, target_mask=mask)
     
     def get_train_dataset(self, batch_size: int, num_epochs: int):
         """Build the training dataset."""
-
-        # Tokenize each sample
-        ds = self._base_data[DatasetSplit.TRAIN]["train"]
         
         inputs = []
+
+        
+        llava_it = self._base_data[DatasetSplit.LLAVA_IT]["train"]
+        lvis_it = self._base_data[DatasetSplit.LVIS_IT]["train"]
+        lrv = self._base_data[DatasetSplit.LRV]["train"]
+        dvqa = self._base_data[DatasetSplit.DVQA]["train"]
+        
+        print(llava_it)
+        print(lvis_it)
+        print(lrv)
+        print(dvqa)
+        
+        
+        print(torch.cuda.memory_summary())
+        for x in llava_it:
+            q_tokens = [self._tokenizer.tokenize(i['value'], add_eos=False) for i in x["conversations"] if i['from'] == 'human']
+            a_tokens = [self._tokenizer.tokenize(i['value']) for i in x["conversations"] if i['from'] == 'gpt']
+            img = x["image"]
+            
+            train_inputs = self._to_training_input(img, q_tokens, a_tokens, set="llava_it")
+            for i in train_inputs:
+                inputs.append(i)
+        print("LLAVA DONE")
+        print(torch.cuda.memory_summary())
+
+        for x in lvis_it:
+            q_tokens = [self._tokenizer.tokenize(i['value'], add_eos=False) for i in x["conversations"] if i['from'] == 'human']
+            a_tokens = [self._tokenizer.tokenize(i['value']) for i in x["conversations"] if i['from'] == 'gpt']
+            img = x["image"]
+            
+            train_inputs = self._to_training_input(img, q_tokens, a_tokens, set="lvis_it")
+            for i in train_inputs:
+                inputs.append(i)
+        print("LVIS DONE")
+        print(torch.cuda.memory_summary())     
+        for x in lrv:
+            q_tokens = self._tokenizer.tokenize(x["question"], add_eos=False)
+            a_tokens = self._tokenizer.tokenize(x["answer"])
+            img = x["image_id"]
+            
+            train_input = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="lrv")
+            inputs.append(train_input)
+        print("LRV DONE")
+        print(torch.cuda.memory_summary())  
+        for x in dvqa:
+            q_tokens = self._tokenizer.tokenize(x["question"], add_eos=False)
+            a_tokens = self._tokenizer.tokenize(x["answer"])
+            img = x["image"]
+            
+            train_input = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="dvqa")
+            inputs.append(train_input)
+        print("DVQA DONE")    
+        print(len(inputs))
+            
+                
+
+
+        # Tokenize each sample
+        
+        print(self._base_data[DatasetSplit.LLAVA_IT])
+        ds = self._base_data[DatasetSplit.TRAIN]["train"]
+        
         
         for x in ds:
             q_tokens = self._tokenizer.tokenize(x['question'], add_eos=False)
             a_tokens = self._tokenizer.tokenize(x["answers"][0]["answer"], add_eos=True)
             img = x["image"]
             
-            train_input = self._to_training_input(img,torch.as_tensor(q_tokens, dtype=torch.int32), torch.as_tensor(a_tokens, dtype=torch.int32))
+            train_input = self._to_training_input(img,torch.as_tensor(q_tokens, dtype=torch.int32), torch.as_tensor(a_tokens, dtype=torch.int32), set="vizwiz")
             inputs.append(train_input)
         
         # Remove the samples which are too long
@@ -463,7 +549,7 @@ class DatasetBuilder:
             a_tokens = self._tokenizer.tokenize(x["answers"][0]["answer"], add_eos=True)
             img = x["image"]
             
-            train_input = self._to_training_input(img,torch.as_tensor(q_tokens, dtype=torch.int32), torch.as_tensor(a_tokens, dtype=torch.int32))
+            train_input = self._to_training_input(img,torch.as_tensor(q_tokens, dtype=torch.int32), torch.as_tensor(a_tokens, dtype=torch.int32), set="vizwiz")
             valid.append(train_input)
             
         valid = [valid[i:i + batch_size] for i in range(0, len(valid), batch_size)]
@@ -479,14 +565,14 @@ if __name__ == "__main__":
         
     
     
-    ds_builder = DatasetBuilder(tokenizer, max_seq_len=30)
-    ds = ds_builder.get_train_dataset(3, 1)
-    os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
+    ds_builder = DatasetBuilder(tokenizer, max_seq_len=150)
+    # ds = ds_builder.get_train_dataset(3, 1)
+    os.environ["CUDA_VISIBLE_DEVICES"]="0,1,2,3"
     
     
     path_checkpoint = "../model/2b-it.pt"
     
-    device = torch.device('cuda')
+    device = torch.device('cuda:3')
     print(f"Loading the parameters from {path_checkpoint} into {device}")
     params = torch.load(path_checkpoint)
     params = {k: v.to(device=device) for k, v in params.items()}
@@ -517,7 +603,7 @@ if __name__ == "__main__":
         num_epochs=1,
         eval_every_n=10,
         batch_size=1,
-        max_steps=10000,
+        max_steps=1_000_000,
     )
 
     trained_params = train_loop(
