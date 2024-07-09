@@ -4,6 +4,7 @@ import timm
 from torch import cat
 import torch.nn as nn
 from torchvision.transforms import Compose, Resize
+from functools import partial
 
 
 def pil_loader(path):
@@ -73,8 +74,14 @@ class VisionEncoder(nn.Module):
             img_size=self.default_image_size
         ).to(self.device)
 
-        if (not self.is_training):
-            self.siglip, self.dino = self.siglip.eval(), self.dino.eval()
+
+        self.siglip.eval()
+        
+        self.dino.eval()
+        
+        
+        self.dino.forward = partial(self.dino.get_intermediate_layers, n={len(self.dino.blocks) - 2})
+        self.siglip.forward = partial(self.siglip.get_intermediate_layers, n={len(self.dino.blocks) - 2})
         # Initialize both vision encoders and set to evalutation mode unless training.
 
         self.siglip_config = timm.data.resolve_model_data_config(self.siglip)
@@ -138,13 +145,12 @@ class VisionEncoder(nn.Module):
         
         img = pil_loader(img_path)
         dino_fix = self.dino(self.dino_transform(img).to(self.device).unsqueeze(0))
-
         
         siglip_fix = self.siglip(self.siglip_transform(img).to(self.device).unsqueeze(0))
 
-
-        logits = cat([dino_fix,
-                      siglip_fix], dim=1)
+        logits = cat([dino_fix[0],
+                      siglip_fix[0]], dim=2)
+        print(logits.shape)
         return logits
         
 

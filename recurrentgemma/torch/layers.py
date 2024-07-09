@@ -335,7 +335,8 @@ class RGLRU(nn.Module):
     bs, l, _ = x.shape
     if(bs == 1):
       segment_pos = segment_pos[None, :]
-
+    # print(segment_pos.shape, "\n", (bs,l))
+    
     assert segment_pos.shape == (bs, l)
     reset = segment_pos == 0
 

@@ -3,27 +3,26 @@ from importlib.machinery import NamespaceLoader
 import pathlib
 from pickletools import optimize
 import random
-from turtle import position
 from typing import Any, Mapping, Iterator
 import enum
 import functools
 import wandb
 
-wandb.init(
-    # set the wandb project where this run will be logged
-    project="Cadence",
+# wandb.init(
+#     # set the wandb project where this run will be logged
+#     project="Cadence",
 
-    # track hyperparameters and run metadata
-    config={
-        "optimizer":'AdamW',
-        "learning_rate":2e-5,
-        "b2":0.99,
-        "num_epochs":1,
-        "eval_every_n":10,
-        "batch_size":1,
-        "max_steps":1000,
-    }
-)
+#     # track hyperparameters and run metadata
+#     config={
+#         "optimizer":'AdamW',
+#         "learning_rate":2e-5,
+#         "b2":0.99,
+#         "num_epochs":1,
+#         "eval_every_n":10,
+#         "batch_size":1,
+#         "max_steps":1000,
+#     }
+# )
 
 import torch.func as func
 
@@ -32,7 +31,7 @@ import json
 import numpy as np
 
 import os
-os.environ["CUDA_VISIBLE_DEVICES"]="-1"
+# os.environ["CUDA_VISIBLE_DEVICES"]="-1"
 
 # We import JAX and some related packages.
 # import chex
@@ -70,15 +69,14 @@ def forward_and_loss_fn(
     target_tokens = input_tokens
     target_mask = input_mask
 
+    # print("\n",tokenizer.to_string(input_tokens.tolist()))
+    # print(image)
+    # print(tokenizer.to_string([torch.argmax(logits, dim=-1).tolist()]))
     
-
-    
-    one_hot = torch.nn.functional.one_hot(target_tokens.to(torch.int64), logits.shape[-1]).to(logits.device)
-    
-    
+    one_hot = torch.nn.functional.one_hot(target_tokens.to(torch.int64), logits.shape[-1]).to("cpu").requires_grad_(requires_grad=False)
+    logits = logits.to("cpu")
     one_hot = one_hot * _tf_to_torch(target_mask).to(one_hot.dtype).to(one_hot.device)[..., None]
-    
-    
+    one_hot = torch.cat([torch.zeros(728, logits.shape[-1]).to(one_hot.device), one_hot])
     norm_factor = 1 / (torch.sum(_tf_to_torch(target_mask)))
     
     norm = torch.nn.LogSoftmax()
@@ -89,19 +87,18 @@ def forward_and_loss_fn(
 
 def _tf_to_torch(x):
     np_tensor = x.numpy()
-    out = torch.from_numpy(np_tensor)
+    out = torch.from_numpy(np_tensor).to("cpu")
+    out.requires_grad = False
     return out
 
 def get_positions(example, pad_id):
-    example = _tf_to_torch(example)
+    # example = _tf_to_torch(example)
+    example = torch.cat([torch.full(([729]), 1), example])
     pad_mask = example != pad_id
     positions = torch.cumsum(pad_mask, dim=-1)
-    
-    ## Add pos indicator for img embedding
-    
-    positions += 1
-    positions = torch.cat((torch.Tensor([1.]), positions), dim=-1)
-    
+    print(positions)
+        
+            
     mask = positions >= 1
     positions[mask] -= 1
     # positions = positions - (positions >= 1)
@@ -227,7 +224,6 @@ def train_loop(
             example=train_example,
             step=n_steps
         )
-        print(train_loss)
         
         
 
@@ -247,13 +243,13 @@ def train_loop(
             avg_loss /= training_cfg.eval_every_n
             eval_loss /= n_steps_eval + 1e-8
             print(f"STEP {n_steps} training loss: {avg_loss} - eval loss: {eval_loss}")
-            wandb.log({"train_loss":avg_loss ,"eval_loss":eval_loss})
+            # wandb.log({"train_loss":avg_loss ,"eval_loss":eval_loss})
             avg_loss=0
             
         if n_steps % 100 == 0:
             torch.save({
                 "params": model.state_dict()
-            }, "./model_v1_18hr.pt")
+            }, "./temp.pt")
         if training_cfg.max_steps is not None and n_steps > training_cfg.max_steps:
             break
     return params
@@ -477,34 +473,34 @@ class DatasetBuilder:
         print("LLAVA DONE")
         print(torch.cuda.memory_summary())
 
-        for x in lvis_it:
-            q_tokens = [self._tokenizer.tokenize(i['value'], add_eos=False) for i in x["conversations"] if i['from'] == 'human']
-            a_tokens = [self._tokenizer.tokenize(i['value']) for i in x["conversations"] if i['from'] == 'gpt']
-            img = x["image"]
+        # for x in lvis_it:
+        #     q_tokens = [self._tokenizer.tokenize(i['value'], add_eos=False) for i in x["conversations"] if i['from'] == 'human']
+        #     a_tokens = [self._tokenizer.tokenize(i['value']) for i in x["conversations"] if i['from'] == 'gpt']
+        #     img = x["image"]
             
-            train_inputs = self._to_training_input(img, q_tokens, a_tokens, set="lvis_it")
-            for i in train_inputs:
-                inputs.append(i)
-        print("LVIS DONE")
-        print(torch.cuda.memory_summary())     
-        for x in lrv:
-            q_tokens = self._tokenizer.tokenize(x["question"], add_eos=False)
-            a_tokens = self._tokenizer.tokenize(x["answer"])
-            img = x["image_id"]
+        #     train_inputs = self._to_training_input(img, q_tokens, a_tokens, set="lvis_it")
+        #     for i in train_inputs:
+        #         inputs.append(i)
+        # print("LVIS DONE")
+        # print(torch.cuda.memory_summary())     
+        # for x in lrv:
+        #     q_tokens = self._tokenizer.tokenize(x["question"], add_eos=False)
+        #     a_tokens = self._tokenizer.tokenize(x["answer"])
+        #     img = x["image_id"]
             
-            train_input = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="lrv")
-            inputs.append(train_input)
-        print("LRV DONE")
-        print(torch.cuda.memory_summary())  
-        for x in dvqa:
-            q_tokens = self._tokenizer.tokenize(x["question"], add_eos=False)
-            a_tokens = self._tokenizer.tokenize(x["answer"])
-            img = x["image"]
+        #     train_input = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="lrv")
+        #     inputs.append(train_input)
+        # print("LRV DONE")
+        # print(torch.cuda.memory_summary())  
+        # for x in dvqa:
+        #     q_tokens = self._tokenizer.tokenize(x["question"], add_eos=False)
+        #     a_tokens = self._tokenizer.tokenize(x["answer"])
+        #     img = x["image"]
             
-            train_input = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="dvqa")
-            inputs.append(train_input)
-        print("DVQA DONE")    
-        print(len(inputs))
+        #     train_input = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="dvqa")
+        #     inputs.append(train_input)
+        # print("DVQA DONE")    
+        # print(len(inputs))
             
                 
 
@@ -565,16 +561,18 @@ if __name__ == "__main__":
         
     
     
-    ds_builder = DatasetBuilder(tokenizer, max_seq_len=150)
-    # ds = ds_builder.get_train_dataset(3, 1)
-    os.environ["CUDA_VISIBLE_DEVICES"]="0,1,2,3"
+    ds_builder = DatasetBuilder(tokenizer, max_seq_len=1150)
+    # ds = ds_builder.get_train_dataset(3, 1)   
+    # os.environ["CUDA_VISIBLE_DEVICES"]="0,1,2,3"
     
     
-    path_checkpoint = "../model/2b-it.pt"
+    path2 = "../model/2b-it.pt"
+    # path2 = "../model/model_v1_18hr.pt"
     
-    device = torch.device('cuda:3')
-    print(f"Loading the parameters from {path_checkpoint} into {device}")
-    params = torch.load(path_checkpoint)
+    print(torch.cuda.device_count())
+    device = torch.device('cuda')
+    print(f"Loading the parameters from {path2} into {device}")
+    params = torch.load(path2, map_location='cuda:1')
     params = {k: v.to(device=device) for k, v in params.items()}
     print("Parameters loaded.")
     # Create a sampler with the right param shapes.
@@ -585,10 +583,10 @@ if __name__ == "__main__":
     model = recurrentgemma.Griffin(config, device=device, dtype=torch.bfloat16)
     model.load_state_dict(params, strict=False)
     
-    # for name, param in model.named_parameters():
-    #   if param.requires_grad:
-    #       if "projector" not in name:
-    #           param.requires_grad = False
+    for name, param in model.named_parameters():
+      if param.requires_grad:
+          if "projector" not in name:
+              param.requires_grad = False
 
     for name, param in model.named_parameters():
       if param.requires_grad:
@@ -603,7 +601,7 @@ if __name__ == "__main__":
         num_epochs=1,
         eval_every_n=10,
         batch_size=1,
-        max_steps=1_000_000,
+        max_steps=500,
     )
 
     trained_params = train_loop(
@@ -613,3 +611,25 @@ if __name__ == "__main__":
         training_cfg=training_cfg,
     )
     
+    for name, param in model.named_parameters():
+      if not param.requires_grad:
+            param.requires_grad = True
+    
+    
+    
+    training_cfg = TrainingConfig(
+    optimizer='AdamW',
+    learning_rate=2e-5,
+    b2=0.99,
+    num_epochs=1,
+    eval_every_n=10,
+    batch_size=1,
+    max_steps=5000,
+    )
+
+    trained_params = train_loop(
+        model=model,
+        params=params,
+        dataset_builder=ds_builder,
+        training_cfg=training_cfg,
+    )

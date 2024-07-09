@@ -54,7 +54,7 @@ class Griffin(nn.Module):
     super().__init__()
     self.config = config
     self.gradient_checkpointing = gradient_checkpointing
-    print("\n\nGRIFFIN\n\n")
+    print("\n\nCADENCE\n\n")
     
     self.vis_encoder = VisionEncoder()
     
@@ -175,7 +175,6 @@ class Griffin(nn.Module):
     if 0 in segment_pos:
         dog = self.vis_encoder(img_path)
         dog = self.projector(dog).to(bfloat16)
-        dog = dog[None, :, :]
         dog = dog.to(x.device)
         x = torch.cat((dog, x), dim=1)
 
