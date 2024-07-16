@@ -3,3 +3,4 @@
 /data
 /training/wandb
 /training/*.pt
+/training/*.pickle

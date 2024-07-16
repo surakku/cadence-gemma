@@ -56,9 +56,9 @@ class Griffin(nn.Module):
     self.gradient_checkpointing = gradient_checkpointing
     print("\n\nCADENCE\n\n")
     
-    self.vis_encoder = VisionEncoder()
+    self.vis_encoder = VisionEncoder(device=device)
     
-    self.projector = MLPProjector()
+    self.projector = MLPProjector(device=device)
 
     self.embedder = modules.Embedder(
         vocab_size=self.config.vocab_size,
@@ -172,11 +172,17 @@ class Griffin(nn.Module):
     x = input_emb
     
 
-    if 0 in segment_pos:
+    if 0 in segment_pos and img_path:
         dog = self.vis_encoder(img_path)
         dog = self.projector(dog).to(bfloat16)
         dog = dog.to(x.device)
         x = torch.cat((dog, x), dim=1)
+        segment_pos+=729
+        seg_extended = [torch.tensor([[0]], device=segment_pos.device, dtype=segment_pos.dtype),
+                        torch.cumsum(torch.ones((1, 728), device=segment_pos.device, dtype=segment_pos.dtype), dim=-1),
+                        segment_pos]
+        segment_pos = torch.cat(seg_extended, dim=-1)
+        print(segment_pos)
 
 
     new_cache = {}

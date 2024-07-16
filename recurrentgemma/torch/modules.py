@@ -420,8 +420,8 @@ class LocalAttentionBlock(nn.Module):
       the input sequence.
     """
     b, t, _ = x.shape
-    if(b == 1):
-      segment_pos = segment_pos[None, :]
+    # if(b == 1):
+    #   segment_pos = segment_pos[None, :]
     assert segment_pos.shape == (b, t), segment_pos.shape
 
     # Generate keys, values and queries.

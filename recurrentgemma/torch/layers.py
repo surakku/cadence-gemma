@@ -333,10 +333,9 @@ class RGLRU(nn.Module):
       Output of the block together with the updated hidden state.
     """
     bs, l, _ = x.shape
-    if(bs == 1):
-      segment_pos = segment_pos[None, :]
+    # if(bs == 1):
+    #   segment_pos = segment_pos[None, :]
     # print(segment_pos.shape, "\n", (bs,l))
-    
     assert segment_pos.shape == (bs, l)
     reset = segment_pos == 0
 

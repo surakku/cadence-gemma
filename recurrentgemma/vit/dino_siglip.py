@@ -1,7 +1,9 @@
 from urllib.request import urlopen
 from PIL import Image
 import timm
+import torch
 from torch import cat
+from torch.cuda.amp import autocast
 import torch.nn as nn
 from torchvision.transforms import Compose, Resize
 from functools import partial
@@ -52,7 +54,7 @@ class VisionEncoder(nn.Module):
     target_sizeL: tuple
         Final resolution of images."""
         
-    def __init__(self, is_training=False, device="cuda:1", default_image_size=384):
+    def __init__(self, is_training=False, device="cuda", default_image_size=384):
         
         super().__init__()
         
@@ -142,15 +144,15 @@ class VisionEncoder(nn.Module):
         
         logits: torch.Tensor
             Encoded image features."""
-        
-        img = pil_loader(img_path)
-        dino_fix = self.dino(self.dino_transform(img).to(self.device).unsqueeze(0))
-        
-        siglip_fix = self.siglip(self.siglip_transform(img).to(self.device).unsqueeze(0))
+        with torch.no_grad():
+            img = pil_loader(img_path)
+            dino_fix = self.dino(self.dino_transform(img).to(self.device).unsqueeze(0))
+            
+            siglip_fix = self.siglip(self.siglip_transform(img).to(self.device).unsqueeze(0))
 
-        logits = cat([dino_fix[0],
-                      siglip_fix[0]], dim=2)
-        print(logits.shape)
+            logits = cat([dino_fix[0],
+                        siglip_fix[0]], dim=2)
+            del dino_fix, siglip_fix
         return logits
         
 

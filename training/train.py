@@ -1,28 +1,28 @@
-from doctest import Example
-from importlib.machinery import NamespaceLoader
-import pathlib
-from pickletools import optimize
 import random
 from typing import Any, Mapping, Iterator
 import enum
 import functools
 import wandb
+from pickle import dump
+import sys
 
-# wandb.init(
-#     # set the wandb project where this run will be logged
-#     project="Cadence",
 
-#     # track hyperparameters and run metadata
-#     config={
-#         "optimizer":'AdamW',
-#         "learning_rate":2e-5,
-#         "b2":0.99,
-#         "num_epochs":1,
-#         "eval_every_n":10,
-#         "batch_size":1,
-#         "max_steps":1000,
-#     }
-# )
+from memory_profiler import profile
+wandb.init(
+    # set the wandb project where this run will be logged
+    project="Cadence",
+
+    # track hyperparameters and run metadata
+    config={
+        "optimizer":'AdamW',
+        "learning_rate":2e-5,
+        "b2":0.99,
+        "num_epochs":1,
+        "eval_every_n":10,
+        "batch_size":1,
+        "max_steps":1000,
+    }
+)
 
 import torch.func as func
 
@@ -50,7 +50,24 @@ from datasets import load_dataset
 import sentencepiece as spm
 from recurrentgemma import torch as recurrentgemma
 
-  
+import torch.distributed as dist
+import torch.optim as optim
+import torch.multiprocessing as mp
+
+from torch.nn.parallel import DistributedDataParallel as DDP
+
+
+def setup(rank, world_size):
+    os.environ['MASTER_ADDR'] = 'localhost'
+    os.environ['MASTER_PORT'] = '12355'
+    torch.cuda.set_device(rank)
+    # initialize the process group
+    dist.init_process_group("nccl", rank=rank, world_size=world_size)
+
+def cleanup():
+    dist.destroy_process_group()
+
+
 
 def forward_and_loss_fn(
     *,
@@ -62,46 +79,50 @@ def forward_and_loss_fn(
 ):
     
     
-    logits, _ = model(tokens=input_tokens, segment_pos=positions, cache=None, img_path=image)
+    
+    logits, cache = model(tokens=input_tokens, segment_pos=positions, cache=None, img_path=image, return_cache=None)
+    del cache
     logits = logits[0, :-1]
     
+    # vocab = spm.SentencePieceProcessor()
+    # vocab.load("../model/tokenizer.model")
     
-    target_tokens = input_tokens
-    target_mask = input_mask
+    # tokenizer = Tokenizer(vocab)
+    
+    # print(input_tokens)
+    # print(input_mask)
 
     # print("\n",tokenizer.to_string(input_tokens.tolist()))
     # print(image)
-    # print(tokenizer.to_string([torch.argmax(logits, dim=-1).tolist()]))
+    # print(tokenizer.to_string([(torch.argmax(logits[728:,:], dim=-1)).tolist()]))
+    with torch.no_grad():
+        target_tokens = input_tokens.to(torch.int64)
+        target_mask = input_mask.to(logits.device)
+        one_hot = torch.nn.functional.one_hot(target_tokens, logits.shape[-1]).requires_grad_(requires_grad=False).to(logits.device) * target_mask.to(torch.int64)[..., None]
+        one_hot = torch.cat([torch.zeros(728, logits.shape[-1], device=one_hot.device), one_hot])
+        norm_factor = 1 / (torch.sum(target_mask))
+        
+        norm = torch.nn.LogSoftmax()
+        
+    loss = -torch.sum((norm(logits)) * one_hot) * norm_factor
     
-    one_hot = torch.nn.functional.one_hot(target_tokens.to(torch.int64), logits.shape[-1]).to("cpu").requires_grad_(requires_grad=False)
-    logits = logits.to("cpu")
-    one_hot = one_hot * _tf_to_torch(target_mask).to(one_hot.dtype).to(one_hot.device)[..., None]
-    one_hot = torch.cat([torch.zeros(728, logits.shape[-1]).to(one_hot.device), one_hot])
-    norm_factor = 1 / (torch.sum(_tf_to_torch(target_mask)))
-    
-    norm = torch.nn.LogSoftmax()
+    del logits, target_tokens, target_mask, one_hot, norm
+    # torch.cuda.empty_cache()
     
     
-    return -torch.sum((norm(logits)) * one_hot) * norm_factor
+    return loss
 
-
-def _tf_to_torch(x):
-    np_tensor = x.numpy()
-    out = torch.from_numpy(np_tensor).to("cpu")
-    out.requires_grad = False
-    return out
 
 def get_positions(example, pad_id):
-    # example = _tf_to_torch(example)
     example = torch.cat([torch.full(([729]), 1), example])
     pad_mask = example != pad_id
     positions = torch.cumsum(pad_mask, dim=-1)
-    print(positions)
         
             
     mask = positions >= 1
     positions[mask] -= 1
     # positions = positions - (positions >= 1)
+    del mask, pad_mask, example
     return positions
 
 # @functools.partial(
@@ -109,6 +130,20 @@ def get_positions(example, pad_id):
 #     static_argnames=['model', 'optimizer'],
 #     donate_argnames=['params', 'opt_state'],
 # )
+class _AdamW():
+    def __init__(self, model, lr, b2, eps, weight_decay):
+        self.optim_dict = {p: torch.optim.AdamW([p], foreach=False, lr=lr, betas=(0.9, b2), eps=eps, weight_decay=weight_decay) for p in model.parameters()}
+
+        for p in model.parameters():
+            if p.requires_grad:
+                p.register_post_accumulate_grad_hook(self.optimizer_hook)
+            
+    def optimizer_hook(self, parameter) -> None:
+        self.optim_dict[parameter].step()
+        self.optim_dict[parameter].zero_grad()
+        
+    def get_state_dict(self):
+        return self.optim_dict
 
 def train_step(
     model: recurrentgemma.Griffin,
@@ -117,24 +152,14 @@ def train_step(
     example,
     step
 ):
-    
     model.train()
     
-    optimizer.zero_grad()
-    
-    
     positions = get_positions(example[0].input_tokens, pad_id)
-    
-    torch_tokens = _tf_to_torch(example[0].input_tokens)
-        
-    
+    torch_tokens = example[0].input_tokens
     
     train_loss = forward_and_loss_fn(model=model, input_tokens=torch_tokens, input_mask=example[0].target_mask, positions=positions, image=example[0].image)
     train_loss.backward()
-    
-    if(step % 1 == 0):
-        optimizer.step()
-    
+    del positions
     # updated_params = {name: params.detach().clone() for name, param in model.named_parameters()}
     return train_loss
     
@@ -144,13 +169,16 @@ def validation_step(
     pad_id: int,
     example,
     ):
-    
-    positions = get_positions(example[0].input_tokens, pad_id)
-    
-    torch_tokens = _tf_to_torch(example[0].input_tokens)
-    
-    val_loss = forward_and_loss_fn(model=model, input_tokens=torch_tokens, input_mask=example[0].target_mask, positions=positions, image="../data/val/" + example[0].image)
-    
+    with torch.no_grad():
+        model.eval()
+        
+        positions = get_positions(example[0].input_tokens, pad_id)
+        
+        torch_tokens = example[0].input_tokens
+        
+        val_loss = forward_and_loss_fn(model=model, input_tokens=torch_tokens, input_mask=example[0].target_mask, positions=positions, image="../data/val/" + example[0].image)
+        
+        del positions, torch_tokens
     return val_loss
 
 
@@ -188,9 +216,10 @@ def train_loop(
     dataset_builder,
     training_cfg: TrainingConfig,
 ):
-
-    optimizer = torch.optim.AdamW(params=model.parameters(), lr=training_cfg.learning_rate, betas=(0.9, training_cfg.b2), eps=training_cfg.eps, weight_decay=training_cfg.weight_decay)
+    # torch.cuda.memory._record_memory_history(enabled='all')
     
+    # optimizer = torch.optim.AdamW(params=model.parameters(), lr=training_cfg.learning_rate, betas=(0.9, training_cfg.b2), eps=training_cfg.eps, weight_decay=training_cfg.weight_decay)
+    optimizer = _AdamW(model=model, lr=training_cfg.learning_rate, b2=training_cfg.b2, eps=training_cfg.eps, weight_decay=training_cfg.weight_decay)
     # Build the training dataset
     train_ds = dataset_builder.get_train_dataset(
         batch_size=training_cfg.batch_size, num_epochs=training_cfg.num_epochs
@@ -217,6 +246,9 @@ def train_loop(
         n_steps_eval += 1
     print(f"Start, validation loss: {eval_loss/n_steps_eval}")
     for train_example in train_ds:
+        # s = torch.cuda.memory._snapshot()
+        # with open(f"snapshot.pickle", "wb") as f:
+        #     dump(s, f)
         train_loss = train_step(
             model=model,
             optimizer=optimizer,
@@ -224,7 +256,6 @@ def train_loop(
             example=train_example,
             step=n_steps
         )
-        
         
 
         n_steps += 1
@@ -243,12 +274,12 @@ def train_loop(
             avg_loss /= training_cfg.eval_every_n
             eval_loss /= n_steps_eval + 1e-8
             print(f"STEP {n_steps} training loss: {avg_loss} - eval loss: {eval_loss}")
-            # wandb.log({"train_loss":avg_loss ,"eval_loss":eval_loss})
+            wandb.log({"train_loss":avg_loss ,"eval_loss":eval_loss}, step=n_steps)
             avg_loss=0
             
         if n_steps % 100 == 0:
             torch.save({
-                "params": model.state_dict()
+                "params": model.module.state_dict(),
             }, "./temp.pt")
         if training_cfg.max_steps is not None and n_steps > training_cfg.max_steps:
             break
@@ -443,6 +474,7 @@ class DatasetBuilder:
                 return TrainingInput(image="../data/train/train/" + image, input_tokens=tokens, target_mask=mask)
             if("val" in image):
                 return TrainingInput(image="../val/" + image, input_tokens=tokens, target_mask=mask)
+        
     
     def get_train_dataset(self, batch_size: int, num_epochs: int):
         """Build the training dataset."""
@@ -461,28 +493,24 @@ class DatasetBuilder:
         print(dvqa)
         
         
-        print(torch.cuda.memory_summary())
         for x in llava_it:
             q_tokens = [self._tokenizer.tokenize(i['value'], add_eos=False) for i in x["conversations"] if i['from'] == 'human']
             a_tokens = [self._tokenizer.tokenize(i['value']) for i in x["conversations"] if i['from'] == 'gpt']
             img = x["image"]
             
             train_inputs = self._to_training_input(img, q_tokens, a_tokens, set="llava_it")
+            inputs.extend(train_inputs)
+        print("LLAVA DONE")
+
+        for x in lvis_it:
+            q_tokens = [self._tokenizer.tokenize(i['value'], add_eos=False) for i in x["conversations"] if i['from'] == 'human']
+            a_tokens = [self._tokenizer.tokenize(i['value']) for i in x["conversations"] if i['from'] == 'gpt']
+            img = x["image"]
+            
+            train_inputs = self._to_training_input(img, q_tokens, a_tokens, set="lvis_it")
             for i in train_inputs:
                 inputs.append(i)
-        print("LLAVA DONE")
-        print(torch.cuda.memory_summary())
-
-        # for x in lvis_it:
-        #     q_tokens = [self._tokenizer.tokenize(i['value'], add_eos=False) for i in x["conversations"] if i['from'] == 'human']
-        #     a_tokens = [self._tokenizer.tokenize(i['value']) for i in x["conversations"] if i['from'] == 'gpt']
-        #     img = x["image"]
-            
-        #     train_inputs = self._to_training_input(img, q_tokens, a_tokens, set="lvis_it")
-        #     for i in train_inputs:
-        #         inputs.append(i)
-        # print("LVIS DONE")
-        # print(torch.cuda.memory_summary())     
+        print("LVIS DONE")
         # for x in lrv:
         #     q_tokens = self._tokenizer.tokenize(x["question"], add_eos=False)
         #     a_tokens = self._tokenizer.tokenize(x["answer"])
@@ -491,7 +519,6 @@ class DatasetBuilder:
         #     train_input = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="lrv")
         #     inputs.append(train_input)
         # print("LRV DONE")
-        # print(torch.cuda.memory_summary())  
         # for x in dvqa:
         #     q_tokens = self._tokenizer.tokenize(x["question"], add_eos=False)
         #     a_tokens = self._tokenizer.tokenize(x["answer"])
@@ -500,7 +527,7 @@ class DatasetBuilder:
         #     train_input = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="dvqa")
         #     inputs.append(train_input)
         # print("DVQA DONE")    
-        # print(len(inputs))
+        print(len(inputs))
             
                 
 
@@ -511,13 +538,13 @@ class DatasetBuilder:
         ds = self._base_data[DatasetSplit.TRAIN]["train"]
         
         
-        for x in ds:
-            q_tokens = self._tokenizer.tokenize(x['question'], add_eos=False)
-            a_tokens = self._tokenizer.tokenize(x["answers"][0]["answer"], add_eos=True)
-            img = x["image"]
+        # for x in ds:
+        #     q_tokens = self._tokenizer.tokenize(x['question'], add_eos=False)
+        #     a_tokens = self._tokenizer.tokenize(x["answers"][0]["answer"], add_eos=True)
+        #     img = x["image"]
             
-            train_input = self._to_training_input(img,torch.as_tensor(q_tokens, dtype=torch.int32), torch.as_tensor(a_tokens, dtype=torch.int32), set="vizwiz")
-            inputs.append(train_input)
+        #     train_input = self._to_training_input(img,torch.as_tensor(q_tokens, dtype=torch.int32), torch.as_tensor(a_tokens, dtype=torch.int32), set="vizwiz")
+        #     inputs.append(train_input)
         
         # Remove the samples which are too long
         # ds = ds.filter(lambda x: torch.shape(x.input_tokens)[0] <= self._max_seq_len)
@@ -528,6 +555,7 @@ class DatasetBuilder:
         inputs = inputs * num_epochs
 
         # Build batches
+        inputs = [i for i in inputs if i.input_tokens.size(dim=0)<=self._max_seq_len]
         inputs = [inputs[i:i + batch_size] for i in range(0, len(inputs), batch_size)]
         return inputs
 
@@ -551,8 +579,9 @@ class DatasetBuilder:
         valid = [valid[i:i + batch_size] for i in range(0, len(valid), batch_size)]
         return valid
         
-
-if __name__ == "__main__":
+def train(rank, world_size):
+    print(f"Running DDP on rank {rank}.")
+    setup(rank, world_size)
     vocab = spm.SentencePieceProcessor()
     vocab.load("../model/tokenizer.model")
     
@@ -560,48 +589,41 @@ if __name__ == "__main__":
     
         
     
-    
-    ds_builder = DatasetBuilder(tokenizer, max_seq_len=1150)
+    ds_builder = DatasetBuilder(tokenizer, max_seq_len=200)
     # ds = ds_builder.get_train_dataset(3, 1)   
     # os.environ["CUDA_VISIBLE_DEVICES"]="0,1,2,3"
     
     
     path2 = "../model/2b-it.pt"
-    # path2 = "../model/model_v1_18hr.pt"
+    # path2 = "../model/temp.pt"
     
-    print(torch.cuda.device_count())
-    device = torch.device('cuda')
-    print(f"Loading the parameters from {path2} into {device}")
-    params = torch.load(path2, map_location='cuda:1')
-    params = {k: v.to(device=device) for k, v in params.items()}
+    print(f"Loading the parameters from {path2} into {rank}")
+    params = torch.load(path2, map_location="cuda:"+str(rank))
+    params = {k: v.to(device=rank) for k, v in params.items()}
     print("Parameters loaded.")
     # Create a sampler with the right param shapes.
     config = recurrentgemma.GriffinConfig.from_torch_params(
         params,
         preset=recurrentgemma.Preset.RECURRENT_GEMMA_2B_V1,
     )
-    model = recurrentgemma.Griffin(config, device=device, dtype=torch.bfloat16)
+    model = DDP(recurrentgemma.Griffin(config, device=rank, dtype=torch.bfloat16), device_ids=[rank], find_unused_parameters=True)
     model.load_state_dict(params, strict=False)
     
     for name, param in model.named_parameters():
       if param.requires_grad:
-          if "projector" not in name:
-              param.requires_grad = False
-
-    for name, param in model.named_parameters():
-      if param.requires_grad:
           print(name)
-          
+    
+    
     
     
     training_cfg = TrainingConfig(
         optimizer='AdamW',
-        learning_rate=2e-5,
+        learning_rate=4e-5,
         b2=0.99,
         num_epochs=1,
         eval_every_n=10,
         batch_size=1,
-        max_steps=500,
+        max_steps=1_000_000,
     )
 
     trained_params = train_loop(
@@ -610,26 +632,64 @@ if __name__ == "__main__":
         dataset_builder=ds_builder,
         training_cfg=training_cfg,
     )
-    
-    for name, param in model.named_parameters():
-      if not param.requires_grad:
-            param.requires_grad = True
-    
-    
-    
-    training_cfg = TrainingConfig(
-    optimizer='AdamW',
-    learning_rate=2e-5,
-    b2=0.99,
-    num_epochs=1,
-    eval_every_n=10,
-    batch_size=1,
-    max_steps=5000,
-    )
 
-    trained_params = train_loop(
-        model=model,
-        params=params,
-        dataset_builder=ds_builder,
-        training_cfg=training_cfg,
-    )
+if __name__ == "__main__":
+    # vocab = spm.SentencePieceProcessor()
+    # vocab.load("../model/tokenizer.model")
+    
+    # tokenizer = Tokenizer(vocab)
+    
+        
+    
+    
+    # ds_builder = DatasetBuilder(tokenizer, max_seq_len=200)
+    # # ds = ds_builder.get_train_dataset(3, 1)   
+    
+    
+    # path2 = "../model/2b-it.pt"
+    # # path2 = "../model/model_v1_18hr.pt"
+    
+    # device = torch.device('cuda')
+    # print(f"Loading the parameters from {path2} into {device}")
+    # params = torch.load(path2, map_location='cuda')
+    # params = {k: v.to(device=device) for k, v in params.items()}
+    # print("Parameters loaded.")
+    # # Create a sampler with the right param shapes.
+    # config = recurrentgemma.GriffinConfig.from_torch_params(
+    #     params,
+    #     preset=recurrentgemma.Preset.RECURRENT_GEMMA_2B_V1,
+    # )
+    # model = recurrentgemma.Griffin(config, device=device, dtype=torch.bfloat16)
+    # model.load_state_dict(params, strict=False)
+    
+    # # for name, param in model.named_parameters():
+    # #   if param.requires_grad:
+    # #       if "projector" not in name:
+    # #           param.requires_grad = False
+
+    # for name, param in model.named_parameters():
+    #   if param.requires_grad:
+    #       print(name)
+    
+    
+    
+    
+    # training_cfg = TrainingConfig(
+    #     optimizer='AdamW',
+    #     learning_rate=2e-5,
+    #     b2=0.99,
+    #     num_epochs=1,
+    #     eval_every_n=10,
+    #     batch_size=1,
+    #     max_steps=1_000_000,
+    # )
+
+    # trained_params = train_loop(
+    #     model=model,
+    #     params=params,
+    #     dataset_builder=ds_builder,
+    #     training_cfg=training_cfg,
+    # )
+    world_size = torch.cuda.device_count()
+    mp.spawn(train, args=(world_size, ), nprocs=world_size, join=True)
+    

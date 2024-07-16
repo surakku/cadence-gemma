@@ -237,13 +237,15 @@ class Sampler:
     """Pre-processes the prompt."""
     factory_kwargs = dict(device=self.device, dtype=torch.int32)
     batch_size, prompt_length = tokens.shape
-    prompt_length+=1
+    
+    prompt_length+=729
 
     # Make all positions to end with the corresponding sequence `length - 1`.
     positions = torch.arange(prompt_length, **factory_kwargs)
     positions = torch.repeat_interleave(positions[None], batch_size, dim=0)
     positions = positions - prompt_length + input_lengths[:, None]
     positions = torch.clip(positions, min=-1)
+    print(positions)
 
     # Actual prompt processing.
     if total_generation_steps == 0:
@@ -410,7 +412,6 @@ class Sampler:
     padded_tokens = self._get_padded_tokens(all_input_ids)
     _, pad_length = padded_tokens.shape
     pad_lengths = pad_length - input_lengths
-    ## THE IMAGE PROCESSOR WILL HAVE TO HAPPEN HERE
     # Prefill processing stage.
     sampling_state = self._prompt_processing_fn(
         padded_tokens,

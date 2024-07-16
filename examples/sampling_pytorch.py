@@ -53,7 +53,7 @@ _TOTAL_GENERATION_STEPS = flags.DEFINE_integer(
 )
 _STRING_TO_SAMPLE = flags.DEFINE_string(
     "string_to_sample",
-    "Where is Paris ?",
+    "What am I looking at??",
     help="Input string to sample.",
 )
 
