@@ -26,9 +26,15 @@ wandb.init(
 
 import torch.func as func
 
+import time
+
 import json
 
 import numpy as np
+from torch.utils.data.dataloader import DataLoader
+
+from accelerate import Accelerator
+accelerator = Accelerator(mixed_precision="bf16", gradient_accumulation_steps=4)
 
 import os
 # os.environ["CUDA_VISIBLE_DEVICES"]="-1"
@@ -79,11 +85,16 @@ def forward_and_loss_fn(
 ):
     
     
+
+    logits, cache = model(tokens=input_tokens, segment_pos=positions, cache=None, img_path=image, return_cache=False)
     
-    logits, cache = model(tokens=input_tokens, segment_pos=positions, cache=None, img_path=image, return_cache=None)
     del cache
     logits = logits[0, :-1]
     
+
+    
+    
+
     # vocab = spm.SentencePieceProcessor()
     # vocab.load("../model/tokenizer.model")
     
@@ -95,11 +106,12 @@ def forward_and_loss_fn(
     # print("\n",tokenizer.to_string(input_tokens.tolist()))
     # print(image)
     # print(tokenizer.to_string([(torch.argmax(logits[728:,:], dim=-1)).tolist()]))
+
     with torch.no_grad():
-        target_tokens = input_tokens.to(torch.int64)
-        target_mask = input_mask.to(logits.device)
+        target_tokens = input_tokens[1:].to(torch.int64)
+        target_mask = input_mask[1:].to(logits.device)
         one_hot = torch.nn.functional.one_hot(target_tokens, logits.shape[-1]).requires_grad_(requires_grad=False).to(logits.device) * target_mask.to(torch.int64)[..., None]
-        one_hot = torch.cat([torch.zeros(728, logits.shape[-1], device=one_hot.device), one_hot])
+        one_hot = torch.cat([torch.zeros(729, logits.shape[-1], device=one_hot.device), one_hot])
         norm_factor = 1 / (torch.sum(target_mask))
         
         norm = torch.nn.LogSoftmax()
@@ -114,7 +126,6 @@ def forward_and_loss_fn(
 
 
 def get_positions(example, pad_id):
-    example = torch.cat([torch.full(([729]), 1), example])
     pad_mask = example != pad_id
     positions = torch.cumsum(pad_mask, dim=-1)
         
@@ -147,19 +158,23 @@ class _AdamW():
 
 def train_step(
     model: recurrentgemma.Griffin,
-    optimizer,
     pad_id,
     example,
     step
 ):
+    
     model.train()
     
-    positions = get_positions(example[0].input_tokens, pad_id)
-    torch_tokens = example[0].input_tokens
     
-    train_loss = forward_and_loss_fn(model=model, input_tokens=torch_tokens, input_mask=example[0].target_mask, positions=positions, image=example[0].image)
-    train_loss.backward()
-    del positions
+    positions = get_positions(example[0].input_tokens, pad_id)
+    
+
+    
+    
+    train_loss = forward_and_loss_fn(model=model, input_tokens=example[0].input_tokens, input_mask=example[0].target_mask, positions=positions, image=example[0].image)
+    
+    accelerator.backward(train_loss)
+    # del positions
     # updated_params = {name: params.detach().clone() for name, param in model.named_parameters()}
     return train_loss
     
@@ -251,12 +266,11 @@ def train_loop(
         #     dump(s, f)
         train_loss = train_step(
             model=model,
-            optimizer=optimizer,
             pad_id=dataset_builder._tokenizer.pad_id,
             example=train_example,
             step=n_steps
         )
-        
+        print(f"{n_steps} step")
 
         n_steps += 1
         avg_loss += train_loss
@@ -502,15 +516,15 @@ class DatasetBuilder:
             inputs.extend(train_inputs)
         print("LLAVA DONE")
 
-        for x in lvis_it:
-            q_tokens = [self._tokenizer.tokenize(i['value'], add_eos=False) for i in x["conversations"] if i['from'] == 'human']
-            a_tokens = [self._tokenizer.tokenize(i['value']) for i in x["conversations"] if i['from'] == 'gpt']
-            img = x["image"]
+        # for x in lvis_it:
+        #     q_tokens = [self._tokenizer.tokenize(i['value'], add_eos=False) for i in x["conversations"] if i['from'] == 'human']
+        #     a_tokens = [self._tokenizer.tokenize(i['value']) for i in x["conversations"] if i['from'] == 'gpt']
+        #     img = x["image"]
             
-            train_inputs = self._to_training_input(img, q_tokens, a_tokens, set="lvis_it")
-            for i in train_inputs:
-                inputs.append(i)
-        print("LVIS DONE")
+        #     train_inputs = self._to_training_input(img, q_tokens, a_tokens, set="lvis_it")
+        #     for i in train_inputs:
+        #         inputs.append(i)
+        # print("LVIS DONE")
         # for x in lrv:
         #     q_tokens = self._tokenizer.tokenize(x["question"], add_eos=False)
         #     a_tokens = self._tokenizer.tokenize(x["answer"])
@@ -528,7 +542,7 @@ class DatasetBuilder:
         #     inputs.append(train_input)
         # print("DVQA DONE")    
         print(len(inputs))
-            
+        
                 
 
 
@@ -610,8 +624,8 @@ def train(rank, world_size):
     model.load_state_dict(params, strict=False)
     
     for name, param in model.named_parameters():
-      if param.requires_grad:
-          print(name)
+        if param.requires_grad:    
+            print(f'{name}: dtype={param.requires_grad}')
     
     
     
