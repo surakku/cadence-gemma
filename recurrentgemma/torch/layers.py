@@ -26,6 +26,8 @@ from recurrentgemma.torch import array_typing as at
 import torch
 from torch import nn
 
+import time
+
 
 _MAX_SQRT_GRADIENT = 1000.0
 
@@ -180,6 +182,7 @@ def rnn_scan(
       return y.type(x.dtype), y[:, -1]
 
   else:
+    
     # Using scan in linear mode.
     if h0 is not None:
       h_t = h0
@@ -187,8 +190,10 @@ def rnn_scan(
       h_t = torch.zeros(x[:, 0].shape, dtype=acc_dtype, device=x.device)
 
     y = torch.zeros_like(x)
+    a = a.type(acc_dtype)
+    x = x.type(acc_dtype)
     for t in range(x.shape[1]):
-      h_t = a[:, t].type(acc_dtype) * h_t + x[:, t].type(acc_dtype)
+      h_t = a[:, t]* h_t + x[:, t]
       y[:, t] = h_t.type(x.dtype)
 
   return y, h_t
@@ -332,10 +337,10 @@ class RGLRU(nn.Module):
     Returns:
       Output of the block together with the updated hidden state.
     """
+    
     bs, l, _ = x.shape
-    # if(bs == 1):
-    #   segment_pos = segment_pos[None, :]
-    # print(segment_pos.shape, "\n", (bs,l))
+    if(segment_pos.shape != (bs, l)):
+      segment_pos = segment_pos[None, :]
     assert segment_pos.shape == (bs, l)
     reset = segment_pos == 0
 
@@ -358,14 +363,12 @@ class RGLRU(nn.Module):
     reset = reset.to(gated_x.device)
     multiplier = reset[..., None] + ~reset[..., None] * multiplier
     normalized_x = gated_x * multiplier.type(x.dtype)
-
-    y, last_h = rnn_scan(
+    y, last_h = rnn_scan( ## 0.06 of a sec!
         x=normalized_x,
         a=a,
         reset=reset,
         h0=cache,
     )
-
     if not return_cache:
       return y, None
 
@@ -623,7 +626,7 @@ class Conv1D(nn.Module):
     #     print(not_a_document_boundary)
     #   mask *= not_a_document_boundary
     
-    for shift in range(1, max_look_ahead): ## Was max__look_ahead - 1
+    for shift in range(1, max_look_ahead - 1):
       # At each position, look ahead by `shift` tokens to see if a
       # document boundary is present there.
       mask *= not_a_document_boundary[:, start_idx + shift : end_idx + shift]

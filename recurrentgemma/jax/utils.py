@@ -49,6 +49,7 @@ def load_parameters(
 
   checkpointer = orbax.checkpoint.PyTreeCheckpointer()
   structure = checkpointer.metadata(checkpoint_path)
+  
 
   if isinstance(sharding, str):
     if sharding == "single_device":

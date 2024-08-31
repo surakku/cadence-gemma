@@ -69,7 +69,7 @@ class Sampler:
         self,
         model,
         vocab,
-        greedy_sample=False
+        greedy_sample=True
     ):
         
         self.model = model
@@ -106,6 +106,7 @@ class Sampler:
             if self.greedy_sample:
                 return torch.argmax(logits, dim=-1)
             else:
+                # print(torch.topk(logits, 5))
                 return torch.distributions.Categorical(logits=logits).sample()
 
     def _sample_step(
@@ -134,7 +135,7 @@ class Sampler:
             logits_buffer[:, step + 1] = logits[:, 0]
             
         if end_sampling_at_eos_token:
-            print("EOS")
+            print(next_token)
             # done_now = torch.equal(next_token, self._eos_token)
             done_now = False
         else:
@@ -225,7 +226,6 @@ class Sampler:
             prev_logits = logits[:, :0]
             
         else:
-            print(positions[:, :-1])
             prev_logits, cache = self.apply_model(
                 tokens=tokens[:, :-1],
                 segment_pos=positions[:, :-1],

@@ -1,7 +1,7 @@
 from sys import modules
 import torch.nn as nn
 from torch.utils import checkpoint
-from torch import bfloat16
+from torch import bfloat16, float, no_grad
 
 
 class MLPProjector(nn.Module):
@@ -25,8 +25,7 @@ class MLPProjector(nn.Module):
         
     
     def forward(self, x):
-        x = checkpoint.checkpoint(
-            self.proj,
-            x.to(bfloat16)
-        )
-        return x
+        # x = x.to(bfloat16)
+        with no_grad():
+            x = self.proj(x.to(bfloat16))
+            return x

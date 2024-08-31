@@ -691,6 +691,59 @@ class MLPBlock(nn.Module):
     return self.ffw_down(activations)
 
 
+class VisionLanguageConnector(nn.Module):
+  
+  width: int
+  expanded_width: int
+  final_w_init_variance_scale: float = 1.0
+  dtype: at.dtype | None = None
+  param_dtype: at.dtype = jnp.float32
+    
+  @property
+  def out_kernel_init(self) -> nn.initializers.Initializer:
+    """Initialization of the kernel for the last layer of the block."""
+    return nn.initializers.variance_scaling(
+        scale=self.final_w_init_variance_scale,
+        mode="fan_in",
+        distribution="normal",
+    )
+    
+  def setup(self) -> None:
+    # Layers.
+    self.ffw_up = layers.Einsum(
+        w_shape=(1, 2176, self.expanded_width),
+        b_shape=(1, 1, 1, self.expanded_width),
+        eqn="...td,cdD->c...tD", ## (batch tokens in_dim, channel in_dim exp_dim -> channel batch tokens exp_dim)
+        name="ffw_up",
+        dtype=self.dtype,
+        param_dtype=self.param_dtype,
+    )
+    self.ffw_down = nn.Dense(
+        name="ffw_down",
+        features=self.width,
+        kernel_init=self.out_kernel_init,
+        use_bias=True,
+        dtype=self.dtype,
+        param_dtype=self.param_dtype,
+    )
+
+  @at.typed
+  def __call__(self, x: at.Image):
+    """Calls the MLP block.
+
+    Args:
+      x: Sequence of input activations.
+
+    Returns:
+      Output of the block.
+    """
+    out = self.ffw_up(x)
+    out = nn.gelu(out[0])
+    out = self.ffw_down(out[0])
+
+    return jnp.expand_dims(out, 0)
+
+
 class ResidualBlock(nn.Module):
   """Griffin and Hawk's residual block.
 

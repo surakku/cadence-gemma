@@ -217,7 +217,6 @@ class GriffinConfig(NamedTuple):
     if max_sequence_length is not None:
       w = min(cls_kwargs["attention_window_size"], max_sequence_length)
       cls_kwargs["attention_window_size"] = w
-
     return cls(**cls_kwargs)
 
   @classmethod
@@ -275,6 +274,8 @@ class GriffinConfig(NamedTuple):
     # Defaults
     lru_width = None
     num_heads = None
+    
+  
 
     block_types = []
     i = 0

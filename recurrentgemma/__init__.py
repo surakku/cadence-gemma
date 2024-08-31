@@ -16,3 +16,5 @@
 
 __version__ = "0.1.0"
 from torch import *
+
+from .vit import VisionEncoder

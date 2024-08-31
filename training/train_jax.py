@@ -44,9 +44,6 @@ from accelerate import Accelerator
 accelerator = Accelerator(mixed_precision="bf16", gradient_accumulation_steps=4)
 
 import os
-os.environ['XLA_FLAGS'] = (
-    '--xla_dump_to=~/tmp/xla'
-)
 
 import chex
 import jax
@@ -72,7 +69,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 
 # from ..vit import VisionEncoder
 
-
+# jax.config.update('jax_log_compiles', True)
 
 @chex.dataclass(frozen=True)
 class TrainingConfig:
@@ -532,6 +529,7 @@ def train_step(
     # Update the parameters
     updates, opt_state = optimizer.update(grads, opt_state, params)
     params = optax.apply_updates(params, updates)
+    jax.profiler.save_device_memory_profile("optim.prof")
     print("Post optim")
 
     return train_loss, params, opt_state
@@ -621,7 +619,6 @@ def train_loop(
     
     vis_enc = VisionEncoder()
     
-    
     for val_example in val_dict.keys():
         torch_emb = torch.squeeze(vis_enc(val_dict[val_example][0].image))
         input_tokens = jax.device_put(val_dict[val_example][0].input_tokens, jax.devices("gpu")[0])
@@ -632,7 +629,7 @@ def train_loop(
         )
         n_steps_eval += 1
     print(f"Start, validation loss: {eval_loss/n_steps_eval}")
-
+    jax.profiler.save_device_memory_profile("val.prof")
     for train_example in train_dict.keys():        
         input_tokens = jax.device_put(train_dict[train_example][0].input_tokens, jax.devices("gpu")[0])
         target_mask = jax.device_put(train_dict[train_example][0].target_mask, jax.devices("gpu")[0])
@@ -648,7 +645,6 @@ def train_loop(
             input_mask=target_mask,
             img_embed=img_embed
             )
-
         n_steps += 1
         avg_loss += train_loss
         print(train_loss)

@@ -26,6 +26,7 @@ from torch.utils import checkpoint
 
 from ..vit import VisionEncoder
 from ..projector import MLPProjector
+import time
 
 
 Cache = dict[str, modules.ResidualBlockCache]
@@ -162,29 +163,35 @@ class Griffin(nn.Module):
       than the returned updated cache is empty initialized and filled in from
       the input sequence.
     """
+    
+    
     if not return_logits and not return_cache:
       return None, None
 
     if(tokens.shape[0] != 1):
         tokens = tokens[None, :]
         
-    input_emb = self.embedder.encode(tokens)
-    x = input_emb
+    x = self.embedder.encode(tokens)
     
+    with torch.no_grad():
+      if(len(segment_pos.shape) == 1):
+        segment_pos = segment_pos[None, :]
+      if 0 in segment_pos and img_path:
+          dog = self.vis_encoder(img_path)
+          dog = self.projector(dog).to(bfloat16)
+          dog = dog.to(x.device)
 
-    if 0 in segment_pos and img_path:
-        dog = self.vis_encoder(img_path)
-        dog = self.projector(dog).to(bfloat16)
-        dog = dog.to(x.device)
-        x = torch.cat((dog, x), dim=1)
-        segment_pos+=729
-        seg_extended = [torch.tensor([[0]], device=segment_pos.device, dtype=segment_pos.dtype),
-                        torch.cumsum(torch.ones((1, 728), device=segment_pos.device, dtype=segment_pos.dtype), dim=-1),
-                        segment_pos]
-        segment_pos = torch.cat(seg_extended, dim=-1)
-        print(segment_pos)
+          x = torch.cat((dog, x), dim=1)
+                    
+          seg_extended = [
+              torch.zeros((1, 1), device=segment_pos.device, dtype=segment_pos.dtype),
+              torch.arange(1, 729, device=segment_pos.device, dtype=segment_pos.dtype).unsqueeze(0),
+              segment_pos
+          ]
+          segment_pos = torch.cat(seg_extended, dim=-1)
 
 
+    
     new_cache = {}
     for i, block in enumerate(self.blocks):
       block_name = f"blocks.{i}"
@@ -199,9 +206,10 @@ class Griffin(nn.Module):
             use_reentrant=False,
             determinism_check="none",
         )
+        
       else:
         x, new_cache[block_name] = block(x, segment_pos, block_cache)
-
+        
     if not return_logits:
       return None, new_cache
 

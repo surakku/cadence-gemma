@@ -7,7 +7,7 @@ from torch.cuda.amp import autocast
 import torch.nn as nn
 from torchvision.transforms import Compose, Resize
 from functools import partial
-
+from torch2jax import j2t, t2j
 
 def pil_loader(path):
     # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
@@ -144,6 +144,16 @@ class VisionEncoder(nn.Module):
         
         logits: torch.Tensor
             Encoded image features."""
+        # print("VIS_INC")
+        # if "llava_it" in img_id.keys():
+        #     print("img_id")
+            
+        # elif "lrv" in img_id.keys():
+        #     print("2img_id")
+        # elif "vizwiz_val" in img_id.keys():
+        #     img_path = "/home/jkobza/cadence/cadence-gemma/data/val/VizWiz_val_" + str(j2t(img_id['vizwiz_val'])).zfill(8) + ".jpg"
+            
+            
         with torch.no_grad():
             img = pil_loader(img_path)
             dino_fix = self.dino(self.dino_transform(img).to(self.device).unsqueeze(0))

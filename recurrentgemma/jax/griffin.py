@@ -17,13 +17,21 @@
 from typing import Literal, overload
 
 from flax import linen as nn
+import jax
 import jax.numpy as jnp
+import jax.lax as lax
 from recurrentgemma import common
 from recurrentgemma.jax import array_typing as at
 from recurrentgemma.jax import layers
 from recurrentgemma.jax import modules
 from recurrentgemma.jax import pallas
+from torch2jax import j2t, t2j
 
+
+# from ..vit import VisionEncoder
+# from ..projector import MLPProjector
+
+import torch
 
 Cache = dict[str, modules.ResidualBlockCache]
 
@@ -45,6 +53,7 @@ class Griffin(nn.Module):
   gradient_checkpointing: bool = True
   dtype: at.dtype | None = None
   param_dtype: at.dtype = jnp.float32
+  
 
   def setup(self):
     self.embedder = modules.Embedder(
@@ -81,7 +90,37 @@ class Griffin(nn.Module):
         dtype=self.dtype,
         param_dtype=self.param_dtype,
     )
+    
+    
+    self.projector = modules.VisionLanguageConnector(
+        width=self.config.width,
+        expanded_width=4000,
+        final_w_init_variance_scale=1.0,
+        name="vl_connector",
+        dtype=self.dtype,
+        param_dtype=self.param_dtype,
+    )
+    
+    # self.projector = modules.VisionLanguageConnector(self.config.width, 4000, 1, self.dtype, self.param_dtype)
 
+
+
+  # def _handle_img(self, image, segment_pos):
+  #   print(image)
+  #   img_embed = self.vis_encoder(image)
+  #   img_embed = self.projector(img_embed)
+  #   img_embed = t2j(img_embed)
+  #   x = jnp.concatenate((img_embed, x), axis=1)
+  #   seg_extended = [
+  #     jnp.zeros((1, 1), dtype=segment_pos.dtype),
+  #     jnp.arange(1, 729, dtype=segment_pos.dtype).reshape(1, -1),
+  #     segment_pos[None, :]
+  #     ]
+  #   segment_pos = jnp.concatenate(seg_extended, axis=-1)
+    
+  #   return x, segment_pos
+    
+    
   @overload
   def __call__(
       self,
@@ -134,6 +173,7 @@ class Griffin(nn.Module):
       cache: Cache | None = None,
       return_logits: bool = True,
       return_cache: bool = True,
+      image: at.Image | None = None
   ) -> tuple[at.TokenLogits | None, Cache | None]:
     """Calls Griffin.
 
@@ -153,8 +193,21 @@ class Griffin(nn.Module):
       return None, None
 
     input_emb = self.embedder.encode(jnp.array(tokens))
-    x = input_emb
+    x = input_emb[None, :, :]
 
+    
+    if not image == None:
+      image = self.projector(image)
+      x = jnp.concatenate((image, x), axis=1)
+      seg_extended = [
+        jnp.zeros((1, 1), dtype=segment_pos.dtype),
+        jnp.arange(1, 729, dtype=segment_pos.dtype).reshape(1, -1),
+        segment_pos[None, :]
+        ]
+      segment_pos = jnp.concatenate(seg_extended, axis=-1)
+    
+      
+      
     new_cache = {}
     for i, block in enumerate(self.blocks):
       layer_name = f"blocks.{i}"

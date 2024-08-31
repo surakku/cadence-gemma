@@ -38,6 +38,8 @@ def typed(function: F) -> F:
 # n = number of heads for multi-query attention.
 # s = number of keys/values
 # h = head dimension
+# p = number of patches
+# i = vision encoder dimension
 
 # General
 Activations = jt.Float[jt.Array, "*b t d"]
@@ -46,6 +48,8 @@ Tokens = jt.Integer[jt.Array, "*b t"]
 TokenLogits = jt.Float[jt.Array, "*b t v"]
 Params = Mapping[str, Any]
 dtype = str | type(jnp.float64)
+Image = jt.Float[jt.Array, "*b p i"]
+Semantics = jt.Float[jt.Array, "*b t d"]
 
 # Attention block
 Queries = jt.Float[jt.Array, "*b t n h"]

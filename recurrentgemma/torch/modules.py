@@ -23,6 +23,7 @@ from recurrentgemma.torch import array_typing as at
 from recurrentgemma.torch import layers
 import torch
 from torch import nn
+import time
 
 
 _MIN_LOGITS_VALUE = -2.3819763e38  # Set to a large negative number.
@@ -420,8 +421,8 @@ class LocalAttentionBlock(nn.Module):
       the input sequence.
     """
     b, t, _ = x.shape
-    # if(b == 1):
-    #   segment_pos = segment_pos[None, :]
+    if(segment_pos.shape != (b, t)):
+      segment_pos = segment_pos[None, :]
     assert segment_pos.shape == (b, t), segment_pos.shape
 
     # Generate keys, values and queries.
@@ -631,7 +632,6 @@ class RecurrentBlock(nn.Module):
     """
     # y branch.
     y = self.linear_y(x)
-    y = gelu(y)
 
     # x branch.
     x = self.linear_x(x)
@@ -647,7 +647,6 @@ class RecurrentBlock(nn.Module):
         cache=None if cache is None else cache.rg_lru_state,
         return_cache=return_cache,
     )
-
     # Join branches.
     x = x * y
     x = self.linear_out(x)
@@ -756,7 +755,6 @@ class MLPBlock(nn.Module):
     gate_value = gelu(out[0])
     activations = gate_value * out[1]
     return self.ffw_down(activations)
-
 
 class ResidualBlock(nn.Module):
   """Griffin and Hawk's residual block."""
@@ -901,19 +899,18 @@ class ResidualBlock(nn.Module):
       the input sequence.
     """
     raw_x = x
-
     inputs_normalized = self.temporal_pre_norm(raw_x)
+
     x, cache = self.temporal_block(
         inputs_normalized, segment_pos, cache, return_cache=return_cache
     )
-
+    
     residual = x + raw_x
 
     x = self.channel_pre_norm(residual)
     x = self.mlp_block(x)
 
     x = x + residual
-
     return x, cache
 
   @classmethod
