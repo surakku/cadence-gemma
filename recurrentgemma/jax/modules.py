@@ -23,6 +23,7 @@ from recurrentgemma import common
 from recurrentgemma.jax import array_typing as at
 from recurrentgemma.jax import layers
 from recurrentgemma.jax import pallas
+from recurrentgemma.jax import scan
 
 
 _MIN_LOGITS_VALUE = -2.3819763e38  # Set to a large negative number.
@@ -468,7 +469,7 @@ class RecurrentBlock(nn.Module):
   scan_type: common.ScanType = common.ScanType.AUTO
   conv1d_temporal_width: int = 4
   final_w_init_variance_scale: float = 1.0
-  pallas_sharding_spec: pallas.PallasShardingSpec | None = None
+  scan_sharding_spec: scan.ShardingSpec | None = None
   dtype: at.dtype | None = None
   param_dtype: at.dtype = jnp.float32
 
@@ -527,7 +528,7 @@ class RecurrentBlock(nn.Module):
         num_heads=self.num_heads,
         scan_type=self.scan_type,
         name="rg_lru",
-        pallas_sharding_spec=self.pallas_sharding_spec,
+        scan_sharding_spec=self.scan_sharding_spec,
         dtype=self.dtype,
         param_dtype=self.param_dtype,
     )
@@ -759,7 +760,7 @@ class ResidualBlock(nn.Module):
     conv1d_temporal_width: The width of the temporal convolution.
     final_w_init_variance_scale: The scale for the variance of the
       initializations of the sub blocks.
-    pallas_sharding_spec: Sharding spec for running Pallas on sharded values.
+    scan_sharding_spec: Sharding spec for running scan on sharded values.
     dtype: dtype used for computation.
     param_dtype: dtype used for initializing parameters.
   """
@@ -795,7 +796,7 @@ class ResidualBlock(nn.Module):
             scan_type=self.scan_type,
             final_w_init_variance_scale=self.final_w_init_variance_scale,
             name="recurrent_block",
-            pallas_sharding_spec=self.pallas_sharding_spec,
+            scan_sharding_spec=self.scan_sharding_spec,
             dtype=self.dtype,
             param_dtype=self.param_dtype,
         )
