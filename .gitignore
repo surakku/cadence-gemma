@@ -4,3 +4,4 @@
 /training/wandb
 /training/*.pt
 /training/*.pickle
+/training/2b-mm

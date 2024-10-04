@@ -51,8 +51,14 @@ _TOTAL_GENERATION_STEPS = flags.DEFINE_integer(
 )
 _STRING_TO_SAMPLE = flags.DEFINE_string(
     "string_to_sample",
-    "What is this?",
+    "What animal is this?",
     help="Input string to sample.",
+)
+
+_IMAGE_TO_SAMPLE = flags.DEFINE_string(
+    "image_to_sample",
+    "/home/jkobza/cadence/cadence-gemma/recurrentgemma/vit/img_tests/dutch.jpg",
+    help="Input image to sample."
 )
 
 
@@ -62,6 +68,7 @@ def _load_and_sample(
     path_tokenizer: str,
     input_string: str,
     total_generation_steps: int,
+    input_image: str
 ) -> None:
   """Loads and samples a string from a checkpoint."""
   print(f"Loading the parameters from {path_checkpoint}")
@@ -75,10 +82,11 @@ def _load_and_sample(
       preset=recurrentgemma.Preset.RECURRENT_GEMMA_2B_V1,
   )
   model = recurrentgemma.Griffin(config)
-  sampler = recurrentgemma.Sampler(model=model, vocab=vocab, params=params)
+  sampler = recurrentgemma.ModalSampler(model=model, vocab=vocab, params=params["params"])
   sampled_output = sampler(
       input_strings=[input_string],
       total_generation_steps=total_generation_steps,
+      img_path=input_image
   )
 
   print(f"Input string: {input_string}")
@@ -95,6 +103,7 @@ def main(argv: Sequence[str]) -> None:
       path_tokenizer=_PATH_TOKENIZER.value,
       input_string=_STRING_TO_SAMPLE.value,
       total_generation_steps=_TOTAL_GENERATION_STEPS.value,
+      input_image=_IMAGE_TO_SAMPLE.value
   )
 
 

@@ -52,8 +52,8 @@ class Griffin(nn.Module):
   config: common.GriffinConfig
   scan_sharding_spec: scan.ShardingSpec | None = None
   gradient_checkpointing: bool = True
-  dtype: at.dtype | None = None
-  param_dtype: at.dtype = jnp.float32
+  dtype: at.dtype = jnp.bfloat16
+  param_dtype: at.dtype = jnp.bfloat16
   
 
   def setup(self):
@@ -196,18 +196,24 @@ class Griffin(nn.Module):
     input_emb = self.embedder.encode(jnp.array(tokens))
     x = input_emb[None, :, :]
 
-    
     if not image == None:
       image = self.projector(image)
+      if(len(x.shape) == 4):
+        x = jnp.squeeze(x, axis=0)
+        print(x.shape)
       x = jnp.concatenate((image, x), axis=1)
       seg_extended = [
         jnp.zeros((1, 1), dtype=segment_pos.dtype),
         jnp.arange(1, 729, dtype=segment_pos.dtype).reshape(1, -1),
-        segment_pos[None, :]
+        segment_pos[None, :] + 729 ## Shapes during training vs inference will need to be handled here, unsqueeze for training, squeeze for inference
         ]
+      print(segment_pos.shape)
       segment_pos = jnp.concatenate(seg_extended, axis=-1)
+
+    if(len(x.shape) == 4):
+      x = jnp.squeeze(x, axis=0)
+    print(x.shape, segment_pos.shape)
     
-      
       
     new_cache = {}
     for i, block in enumerate(self.blocks):

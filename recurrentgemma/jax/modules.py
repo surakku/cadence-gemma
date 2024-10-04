@@ -774,7 +774,7 @@ class ResidualBlock(nn.Module):
   scan_type: common.ScanType = common.ScanType.AUTO
   conv1d_temporal_width: int = 4
   final_w_init_variance_scale: float = 1.0
-  pallas_sharding_spec: pallas.PallasShardingSpec | None = None
+  scan_sharding_spec: scan.ShardingSpec | None = None
   dtype: at.dtype | None = None
   param_dtype: at.dtype = jnp.float32
 

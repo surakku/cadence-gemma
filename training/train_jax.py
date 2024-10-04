@@ -2,56 +2,33 @@ import random
 from typing import Any, Mapping, Iterator
 import enum
 import functools
-import wandb
 from pickle import dump
 import sys
 import pathlib
 from torch2jax import j2t, t2j
-import re
-from jax.tree_util import register_pytree_node
-from jax.tree_util import register_pytree_node_class
+
 
 
 from recurrentgemma.vit import VisionEncoder
 
 from memory_profiler import profile
-# wandb.init(
-#     # set the wandb project where this run will be logged
-#     project="Cadence",
 
-#     # track hyperparameters and run metadata
-#     config={
-#         "optimizer":'AdamW',
-#         "learning_rate":2e-5,
-#         "b2":0.99,
-#         "num_epochs":1,
-#         "eval_every_n":10,
-#         "batch_size":1,
-#         "max_steps":1000,
-#     }
-# )
+import mlflow
 
-import torch.func as func
 
-import time
 
-import json
+
+
 
 import numpy as np
-from torch.utils.data.dataloader import DataLoader
 
-from accelerate import Accelerator
-accelerator = Accelerator(mixed_precision="bf16", gradient_accumulation_steps=4)
 
-import os
 
 import chex
 import jax
 import jax.numpy as jnp
 import optax
 
-from attr import dataclass
-from numpy import dtype
 import torch
 
 # We will use tensorflow to handle the dataset
@@ -61,13 +38,8 @@ from datasets import load_dataset
 import sentencepiece as spm
 from recurrentgemma import jax as recurrentgemma
 
-import torch.distributed as dist
-import torch.optim as optim
-import torch.multiprocessing as mp
 
-from torch.nn.parallel import DistributedDataParallel as DDP
-
-# from ..vit import VisionEncoder
+jax.config.update("jax_traceback_filtering", "off")
 
 # jax.config.update('jax_log_compiles', True)
 
@@ -95,18 +67,6 @@ class TrainingInput:
     
     image: str
     
-# def flattenInput(tree):
-#     children = (tree.count,)
-#     return (children)
-    
-# def unflattenInput(children):
-#     return TrainingInput(*children)
-    
-# register_pytree_node(
-#     TrainingInput,
-#     flattenInput,
-#     unflattenInput
-# )
     
     
     
@@ -153,6 +113,10 @@ class DatasetBuilder:
      
     N_ITEMS = {DatasetSplit.TRAIN: 20_000, DatasetSplit.VALIDATION: 0}
     BUFFER_SIZE_SHUFFLE = 6_000
+    USER_TOKEN = 1645
+    MODEL_TOKEN = 2516
+    START_TOKEN = 106
+    END_TOKEN = 107
      
     def __init__(self,
                 tokenizer: Tokenizer,
@@ -215,44 +179,39 @@ class DatasetBuilder:
             inputs.extend(train_inputs)
         print("LLAVA DONE")
 
-        # for x in lvis_it:
-        #     q_tokens = [self._tokenizer.tokenize(i['value'], add_eos=False) for i in x["conversations"] if i['from'] == 'human']
-        #     a_tokens = [self._tokenizer.tokenize(i['value']) for i in x["conversations"] if i['from'] == 'gpt']
-        #     img = x["image"]
-        #     idx = x['id']
+        for x in lvis_it:
+            q_tokens = [self._tokenizer.tokenize(i['value'], add_eos=False) for i in x["conversations"] if i['from'] == 'human']
+            a_tokens = [self._tokenizer.tokenize(i['value']) for i in x["conversations"] if i['from'] == 'gpt']
+            img = x["image"]
+            idx = x['id']
             
-        #     train_inputs = self._to_training_input(img, q_tokens, a_tokens, set="lvis_it")
-        #     for i in train_inputs:
-        #         inputs.append(i)
-        # print("LVIS DONE")
-        # for x in lrv:
-        #     q_tokens = self._tokenizer.tokenize(x["question"], add_eos=False)
-        #     a_tokens = self._tokenizer.tokenize(x["answer"])
-        #     img = x["image_id"]
+            train_inputs = self._to_training_input(img, q_tokens, a_tokens, set="lvis_it")
+            inputs.extend(train_inputs)
+        print("LVIS DONE")
+        for x in lrv:
+            q_tokens = self._tokenizer.tokenize(x["question"], add_eos=False)
+            a_tokens = self._tokenizer.tokenize(x["answer"])
+            img = x["image_id"]
 
             
-        #     train_input = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="lrv")
-        #     inputs.append(train_input)
-        # print("LRV DONE")
-        # for x in dvqa:
-        #     print(x)
-        #     q_tokens = self._tokenizer.tokenize(x["question"], add_eos=False)
-        #     a_tokens = self._tokenizer.tokenize(x["answer"])
-        #     img = x["image"]
+            train_inputs = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="lrv")
+            inputs.append(train_inputs)
+        print("LRV DONE")
+        for x in dvqa:
+            q_tokens = self._tokenizer.tokenize(x["question"], add_eos=False)
+            a_tokens = self._tokenizer.tokenize(x["answer"])
+            img = x["image"]
             
-        #     train_input = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="dvqa")
-        #     inputs.append(train_input)
-        # print("DVQA DONE")    
+            train_inputs = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="dvqa")
+            inputs.append(train_inputs)
+        print("DVQA DONE")
         print(len(inputs))
         
                 
 
 
         # Tokenize each sample
-        
-        print(self._base_data[DatasetSplit.LLAVA_IT])
-        ds = self._base_data[DatasetSplit.TRAIN]["train"]
-        
+                
         
         # for x in ds:
         #     q_tokens = self._tokenizer.tokenize(x['question'], add_eos=False)
@@ -271,9 +230,10 @@ class DatasetBuilder:
         inputs = inputs * num_epochs
 
         # Build batches
-        inputs = [i for i in inputs if i.input_tokens.shape[-1]<=self._max_seq_len]
-        inputs = [inputs[i:i + batch_size] for i in range(0, len(inputs), batch_size)]
-        inputs = {i: obj for i, obj in enumerate(inputs)}
+        
+        inputs = [i for i in inputs if i.input_tokens.shape[-1]<=self._max_seq_len] # Ensure no inputs are too long
+        inputs = [inputs[i:i + batch_size] for i in range(0, len(inputs), batch_size)] # Batch inputs
+        
         return inputs
     
     def get_validation_dataset(self, batch_size: int):
@@ -296,7 +256,7 @@ class DatasetBuilder:
             valid.append(train_input)
             
         valid = [valid[i:i + batch_size] for i in range(0, len(valid), batch_size)]
-        valid = {i: obj for i, obj in enumerate(valid)}
+
         return valid
     
     
@@ -312,6 +272,10 @@ class DatasetBuilder:
         if set == "llava_it":
             ins = []
             for idx in range(len(src_tokens)):
+                src_tokens[idx] = [self.START_TOKEN, self.USER_TOKEN] + src_tokens[idx] + [self.END_TOKEN]
+                dst_tokens[idx] = [self.START_TOKEN, self.MODEL_TOKEN] + dst_tokens[idx] + [self.END_TOKEN]
+                
+                
                 src_tensor = torch.Tensor(src_tokens[idx]).to(torch.int64).to("cpu")
                 dst_tensor = torch.Tensor(dst_tokens[idx]).to(torch.int64).to("cpu")
                 
@@ -324,7 +288,6 @@ class DatasetBuilder:
                 
                 tokens = self._pad_up_to_max_len(tokens, self._tokenizer.pad_id)
                 mask = self._pad_up_to_max_len(mask, False)
-                # print(type(img_id), img_id, type({"llava_it": img_id}), {"llava_it": img_id})
                 # ins.append(TrainingInput(image="/lus/eagle/projects/argonne_tpc/jkobza/data/coco/train2014/COCO_train2014_"+image, input_tokens=tokens, target_mask=mask))
                 ins.append(TrainingInput(image="/lus/eagle/projects/argonne_tpc/jkobza/data/coco/train2014/COCO_train2014_"+image, input_tokens=t2j(tokens), target_mask=t2j(mask)))
             return ins
@@ -332,6 +295,10 @@ class DatasetBuilder:
         if set == "lvis_it":
             ins = []
             for idx in range(len(src_tokens)):
+                src_tokens[idx] = [self.START_TOKEN, self.USER_TOKEN] + src_tokens[idx] + [self.END_TOKEN]
+                dst_tokens[idx] = [self.START_TOKEN, self.MODEL_TOKEN] + dst_tokens[idx] + [self.END_TOKEN]                
+                
+
                 src_tensor = torch.Tensor(src_tokens[idx]).to(torch.int64).to("cpu")
                 dst_tensor = torch.Tensor(dst_tokens[idx]).to(torch.int64).to("cpu")
                 
@@ -345,11 +312,14 @@ class DatasetBuilder:
                 tokens = self._pad_up_to_max_len(tokens, self._tokenizer.pad_id)
                 mask = self._pad_up_to_max_len(mask, False)
                 ins.append(TrainingInput(image="/lus/eagle/projects/argonne_tpc/jkobza/data/"+image, input_tokens=t2j(tokens), target_mask=t2j(mask)))
-                # print(img_id)
                 # ins.append(TrainingInput(image={"lvis_it": int(img_id)}, input_tokens=tokens, target_mask=mask))
             return ins
 
         if set == "lrv":
+            src_tokens = [self.START_TOKEN, self.USER_TOKEN] + src_tokens + [self.END_TOKEN]
+            dst_tokens = [self.START_TOKEN, self.MODEL_TOKEN] + dst_tokens + [self.END_TOKEN]
+            
+            
             src_tensor = torch.Tensor(src_tokens).to(torch.int64).to("cpu")
             dst_tensor = torch.Tensor(dst_tokens).to(torch.int64).to("cpu")
             
@@ -366,6 +336,10 @@ class DatasetBuilder:
             return TrainingInput(image="/lus/eagle/projects/argonne_tpc/jkobza/data/LRV/image/"+image+".jpg", input_tokens=t2j(tokens), target_mask=t2j(mask))
 
         if set == "dvqa":
+            src_tokens = [self.START_TOKEN, self.USER_TOKEN] + src_tokens + [self.END_TOKEN]
+            dst_tokens = [self.START_TOKEN, self.MODEL_TOKEN] + dst_tokens + [self.END_TOKEN]            
+            
+            
             src_tensor = torch.Tensor(src_tokens).to(torch.int64).to("cpu")
             dst_tensor = torch.Tensor(dst_tokens).to(torch.int64).to("cpu")
             
@@ -425,6 +399,7 @@ def forward_and_loss_fn(
         input_tokens: input tokens sequence, shape [B, L].
         input_mask: tokens to ignore when computing the loss, shape [B, L].
         positions: relative position of each token, shape [B, L].
+        image: image embeddings.
 
     Returns:
         Softmax cross-entropy loss for the next-token prediction task.
@@ -462,8 +437,7 @@ def forward_and_loss_fn(
     norm_factor = 1 / (jnp.sum(target_mask) + 1e-8)
 
     # Extend one hot for img logits
-    
-    one_hot = jnp.concatenate([jnp.zeros((729, logits.shape[-1])), one_hot])
+    one_hot = jnp.concatenate([jnp.zeros((729, logits.shape[-1]), dtype=jnp.bfloat16), one_hot])
 
     # Return the nll loss.
     return -jnp.sum(jax.nn.log_softmax(logits) * one_hot) * norm_factor
@@ -508,7 +482,9 @@ def train_step(
         optimizer: optax optimizer to use.
         opt_state: input optimizer's state.
         pad_id: id of the pad token.
-        example: input batch.
+        input_tokens: input text tokens.
+        input_mask: masking for the input tokens.
+        img_embed: image embeddings.
 
     Returns:
         Training loss, updated parameters, updated optimizer state.
@@ -525,12 +501,10 @@ def train_step(
         positions=positions,
         image=img_embed
     )
-    print("Pre optim")
     # Update the parameters
-    updates, opt_state = optimizer.update(grads, opt_state, params)
-    params = optax.apply_updates(params, updates)
-    jax.profiler.save_device_memory_profile("optim.prof")
-    print("Post optim")
+    grads, opt_state = optimizer.update(grads, opt_state, params)
+
+    params = optax.apply_updates(params, grads)
 
     return train_loss, params, opt_state
 
@@ -600,17 +574,11 @@ def train_loop(
     validation_ds = dataset_builder.get_validation_dataset(
         batch_size=training_cfg.batch_size
     )
-    
-    sampled_keys = random.sample(list(validation_ds.keys()), 10)
-
-    # Create a new dictionary using the sampled keys
-    val_dict = {key: validation_ds[key] for key in sampled_keys}
-    train_dict = {key: train_ds[key] for key in sampled_keys}
+    validation_ds = random.sample(validation_ds, 10)
 
     n_steps = 0
     avg_loss=0
     
-    # vision_enc = VisionEncoder()
 
 
     # A first round of validation loss
@@ -619,55 +587,59 @@ def train_loop(
     
     vis_enc = VisionEncoder()
     
-    for val_example in val_dict.keys():
-        torch_emb = torch.squeeze(vis_enc(val_dict[val_example][0].image))
-        input_tokens = jax.device_put(val_dict[val_example][0].input_tokens, jax.devices("gpu")[0])
-        target_mask = jax.device_put(val_dict[val_example][0].target_mask, jax.devices("gpu")[0])
-        img_embed = t2j(torch_emb).astype(jnp.bfloat16)
-        eval_loss += validation_step(
-            model, params, dataset_builder._tokenizer.pad_id, input_tokens, target_mask, img_embed
-        )
-        n_steps_eval += 1
-    print(f"Start, validation loss: {eval_loss/n_steps_eval}")
-    jax.profiler.save_device_memory_profile("val.prof")
-    for train_example in train_dict.keys():        
-        input_tokens = jax.device_put(train_dict[train_example][0].input_tokens, jax.devices("gpu")[0])
-        target_mask = jax.device_put(train_dict[train_example][0].target_mask, jax.devices("gpu")[0])
-        img_embed = t2j(torch_emb).astype(jnp.bfloat16)
-        print("stepping")
-        train_loss, params, opt_state = train_step(
-            model=model,
-            params=params,
-            optimizer=optimizer,
-            opt_state=opt_state,
-            pad_id=dataset_builder._tokenizer.pad_id,
-            input_tokens=input_tokens,
-            input_mask=target_mask,
-            img_embed=img_embed
+    with mlflow.start_run():
+        for val_example in validation_ds:
+            torch_emb = torch.squeeze(vis_enc(val_example[0].image))
+            input_tokens = jax.device_put(val_example[0].input_tokens, jax.devices("gpu")[0])
+            target_mask = jax.device_put(val_example[0].target_mask, jax.devices("gpu")[0])
+            img_embed = t2j(torch_emb).astype(jnp.bfloat16)
+            eval_loss += validation_step(
+                model, params, dataset_builder._tokenizer.pad_id, input_tokens, target_mask, img_embed
             )
-        n_steps += 1
-        avg_loss += train_loss
-        print(train_loss)
-        if n_steps % training_cfg.eval_every_n == 0:
-            eval_loss = 0
-
-            n_steps_eval = 0
-            val_iterator = validation_ds.as_numpy_iterator()
-            for val_example in val_iterator:
-                eval_loss += validation_step(
-                    model,
-                    params,
-                    dataset_builder._tokenizer.pad_id,
-                    jax.device_put(val_example, jax.devices("gpu")[0]), ## Might have to make this sharding instead of explicit
+            n_steps_eval += 1
+        print(f"Start, validation loss: {eval_loss/n_steps_eval}")
+        mlflow.log_metric("val_loss", eval_loss/n_steps_eval, step=0)
+        for train_example in train_ds:
+            torch_emb = torch.squeeze(vis_enc(train_example[0].image))
+            input_tokens = jax.device_put(train_example[0].input_tokens, jax.devices("gpu")[0])
+            target_mask = jax.device_put(train_example[0].target_mask, jax.devices("gpu")[0])
+            img_embed = t2j(torch_emb).astype(jnp.bfloat16)
+            train_loss, params, opt_state = train_step(
+                model=model,
+                params=params,
+                optimizer=optimizer,
+                opt_state=opt_state,
+                pad_id=dataset_builder._tokenizer.pad_id,
+                input_tokens=input_tokens,
+                input_mask=target_mask,
+                img_embed=img_embed
                 )
-                n_steps_eval +=1
-            avg_loss /= training_cfg.eval_every_n
-            eval_loss /= n_steps_eval
-            print(f"STEP {n_steps} training loss: {avg_loss} - eval loss: {eval_loss}")
-            avg_loss=0
-        if training_cfg.max_steps is not None and n_steps > training_cfg.max_steps:
-            break
-        return params
+            n_steps += 1
+            avg_loss += train_loss
+            # mlflow.log_metric("train_loss", train_loss, step=n_steps)
+            print(train_loss)
+            if n_steps % training_cfg.eval_every_n == 0:
+                eval_loss = 0
+
+                n_steps_eval = 0
+                for val_example in validation_ds:
+                    torch_emb = torch.squeeze(vis_enc(val_example[0].image))
+                    input_tokens = jax.device_put(val_example[0].input_tokens, jax.devices("gpu")[0])
+                    target_mask = jax.device_put(val_example[0].target_mask, jax.devices("gpu")[0])
+                    img_embed = t2j(torch_emb).astype(jnp.bfloat16)
+                    eval_loss += validation_step(
+                        model, params, dataset_builder._tokenizer.pad_id, input_tokens, target_mask, img_embed
+                    )
+                    n_steps_eval += 1
+                avg_loss /= training_cfg.eval_every_n
+                eval_loss /= n_steps_eval
+                print(f"STEP {n_steps} training loss: {avg_loss} - eval loss: {eval_loss}")
+                mlflow.log_metric("train_loss", avg_loss, step=n_steps)
+                mlflow.log_metric("val_loss", eval_loss, step=n_steps)
+                avg_loss=0
+            if training_cfg.max_steps is not None and n_steps > training_cfg.max_steps:
+                break
+    return params
 
 
         
@@ -689,7 +661,7 @@ if __name__ == "__main__":
     
     preset = recurrentgemma.Preset.RECURRENT_GEMMA_2B_V1
     
-    params =  recurrentgemma.load_parameters(ckpt_path, "single_device")
+    params =  recurrentgemma.load_parameters(ckpt_path, "replicated")
     
     
     key = jax.random.PRNGKey(0)
@@ -703,6 +675,7 @@ if __name__ == "__main__":
     
     SEQ_SIZE = 300
     tokenizer = Tokenizer(vocab)
+    print(tokenizer.tokenize("user"), tokenizer.tokenize("model"), tokenizer.tokenize("<start_of_turn>"), tokenizer.tokenize("<end_of_turn>"), )
     dataset_builder= DatasetBuilder(tokenizer, SEQ_SIZE)
     training_cfg = TrainingConfig(
         optimizer='adamw',
@@ -711,12 +684,20 @@ if __name__ == "__main__":
         num_epochs=1,
         eval_every_n=20,
         batch_size=1,
-        max_steps=1000,
+        max_steps=15_000,
     )
+    
+    
+    mlflow.set_tracking_uri(uri="http://98.214.168.64:5000")
+    mlflow.set_experiment("Cadence-Jax-1")
 
+    
     trained_params = train_loop(
         model=model,
         params=params,
         dataset_builder=dataset_builder,
         training_cfg=training_cfg,
     )
+    
+    
+    recurrentgemma.utils.save_parameters("/home/jkobza/cadence/cadence-gemma/training/2b-mm", trained_params)

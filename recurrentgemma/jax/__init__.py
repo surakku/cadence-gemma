@@ -13,23 +13,20 @@
 # limitations under the License.
 # ============================================================================
 """Space-Gemma Jax public API."""
+
 from recurrentgemma import common
 from recurrentgemma.jax import griffin
 from recurrentgemma.jax import layers
 from recurrentgemma.jax import modules
-from recurrentgemma.jax import pallas
 from recurrentgemma.jax import sampler
 from recurrentgemma.jax import scan
 from recurrentgemma.jax import utils
-
+from recurrentgemma.jax import modal_sampler
 
 ScanType = common.ScanType
 TemporalBlockType = common.TemporalBlockType
 Preset = common.Preset
 GriffinConfig = common.GriffinConfig
-PallasShardingSpec = pallas.PallasShardingSpec
-sharded_lru = pallas.sharded_lru
-rnn_scan = layers.rnn_scan
 ShardingSpec = scan.ShardingSpec
 linear_scan = scan.linear_scan
 BlockDiagonalLinear = layers.BlockDiagonalLinear
@@ -43,13 +40,13 @@ ResidualBlockCache = modules.ResidualBlockCache
 ResidualBlock = modules.ResidualBlock
 Griffin = griffin.Griffin
 Sampler = sampler.Sampler
+ModalSampler = modal_sampler.ModalSampler
 load_parameters = utils.load_parameters
+
+
 __all__ = (
     "ScanType",
     "TemporalBlockType",
-    "PallasShardingSpec",
-    "sharded_lru",
-    "rnn_scan",
     "ShardingSpec",
     "linear_scan",
     "BlockDiagonalLinear",
@@ -66,7 +63,9 @@ __all__ = (
     "Griffin",
     "Sampler",
     "load_parameters",
+    "ModalSampler"
 )
+
 # Prevents from accessing anything except the exported symbols
 try:
   del jax, common  # pylint: disable=undefined-variable
