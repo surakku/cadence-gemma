@@ -4,7 +4,7 @@ CadenceGemma is a semi-novel multimodal architecure built upon [RecurrentGemma](
 
 Cadence builds upon RecurrentGemma in a way similar to [Cobra](https://arxiv.org/abs/2403.14520) with Mamba, by introducing a combined vision encoder and projector in order to combine modalities in a shared semantic space. RecurrentGemma is then fine tuned to interperet the projected visual tokens.
 
-Disclaimer - This is ongoing research and is still in it's infancy. The architecture is being finished and training will begin soon.
+Disclaimer - This is ongoing research and is still progressing. Torch implementation works, however quite slow. Working on jax implementation at the moment.
 
 ### Learn more about RecurrentGemma
 
