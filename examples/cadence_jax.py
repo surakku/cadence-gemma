@@ -82,7 +82,7 @@ def _load_and_sample(
       preset=recurrentgemma.Preset.RECURRENT_GEMMA_2B_V1,
   )
   model = recurrentgemma.Griffin(config)
-  sampler = recurrentgemma.ModalSampler(model=model, vocab=vocab, params=params["params"])
+  sampler = recurrentgemma.ModalSampler(model=model, vocab=vocab, params=params["params"], is_it_model=True)
   sampled_output = sampler(
       input_strings=[input_string],
       total_generation_steps=total_generation_steps,
@@ -90,6 +90,7 @@ def _load_and_sample(
   )
 
   print(f"Input string: {input_string}")
+  print(f"Input image: {input_image}")
   print(f"Sampled string: {sampled_output.text}")
 
 

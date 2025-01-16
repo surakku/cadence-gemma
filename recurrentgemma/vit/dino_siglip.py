@@ -84,7 +84,6 @@ class VisionEncoder(nn.Module):
         
         self.dino.forward = partial(self.dino.get_intermediate_layers, n={len(self.dino.blocks) - 2})
         self.siglip.forward = partial(self.siglip.get_intermediate_layers, n={len(self.dino.blocks) - 2})
-        # Initialize both vision encoders and set to evalutation mode unless training.
 
         self.siglip_config = timm.data.resolve_model_data_config(self.siglip)
         self.siglip_config["input_size"] = (3, self.default_image_size, self.default_image_size)
@@ -144,16 +143,7 @@ class VisionEncoder(nn.Module):
         
         logits: torch.Tensor
             Encoded image features."""
-        # print("VIS_INC")
-        # if "llava_it" in img_id.keys():
-        #     print("img_id")
-            
-        # elif "lrv" in img_id.keys():
-        #     print("2img_id")
-        # elif "vizwiz_val" in img_id.keys():
-        #     img_path = "/home/jkobza/cadence/cadence-gemma/data/val/VizWiz_val_" + str(j2t(img_id['vizwiz_val'])).zfill(8) + ".jpg"
-            
-            
+       
         with torch.no_grad():
             img = pil_loader(img_path)
             dino_fix = self.dino(self.dino_transform(img).to(self.device).unsqueeze(0))

@@ -54,6 +54,7 @@ class TrainingConfig:
     b2: float = 0.99
     eps: float = 1e-8
     max_steps: int | None = None
+    freeze_llm: bool = False
 
 @chex.dataclass(frozen=True)
 class TrainingInput:
@@ -87,7 +88,8 @@ class Tokenizer():
         input,
         add_eos=True
     ):
-        int_list = self._spm_processor.EncodeAsIds(str(input))
+        int_list = [self._spm_processor.bos_id()]
+        int_list.extend(self._spm_processor.EncodeAsIds(str(input)))
         if add_eos:
             int_list.append(self._spm_processor.eos_id())
         return int_list
@@ -170,8 +172,8 @@ class DatasetBuilder:
         
         
         for x in llava_it:
-            q_tokens = [self._tokenizer.tokenize(i['value'], add_eos=False) for i in x["conversations"] if i['from'] == 'human']
-            a_tokens = [self._tokenizer.tokenize(i['value']) for i in x["conversations"] if i['from'] == 'gpt']
+            q_tokens = [self._tokenizer.tokenize(recurrentgemma.common.apply_it_formatter(i['value']), add_eos=False) for i in x["conversations"] if i['from'] == 'human']
+            a_tokens = [self._tokenizer.tokenize(i['value']+"<end_of_turn>\n") for i in x["conversations"] if i['from'] == 'gpt']
             img = x["image"]
             idx = x['id']
             
@@ -179,58 +181,41 @@ class DatasetBuilder:
             inputs.extend(train_inputs)
         print("LLAVA DONE")
 
-        for x in lvis_it:
-            q_tokens = [self._tokenizer.tokenize(i['value'], add_eos=False) for i in x["conversations"] if i['from'] == 'human']
-            a_tokens = [self._tokenizer.tokenize(i['value']) for i in x["conversations"] if i['from'] == 'gpt']
-            img = x["image"]
-            idx = x['id']
+        # for x in lvis_it:
+        #     q_tokens = [self._tokenizer.tokenize(recurrentgemma.common.apply_it_formatter(i['value']), add_eos=False) for i in x["conversations"] if i['from'] == 'human']
+        #     a_tokens = [self._tokenizer.tokenize(i['value']+"<end_of_turn>\n") for i in x["conversations"] if i['from'] == 'gpt']
+        #     img = x["image"]
+        #     idx = x['id']
             
-            train_inputs = self._to_training_input(img, q_tokens, a_tokens, set="lvis_it")
-            inputs.extend(train_inputs)
-        print("LVIS DONE")
-        for x in lrv:
-            q_tokens = self._tokenizer.tokenize(x["question"], add_eos=False)
-            a_tokens = self._tokenizer.tokenize(x["answer"])
-            img = x["image_id"]
+        #     train_inputs = self._to_training_input(img, q_tokens, a_tokens, set="lvis_it")
+        #     inputs.extend(train_inputs)
+        # print("LVIS DONE")
+        # for x in lrv:
+        #     q_tokens = self._tokenizer.tokenize(recurrentgemma.common.apply_it_formatter(x["question"]), add_eos=False)
+        #     a_tokens = self._tokenizer.tokenize(x["answer"]+"<end_of_turn>\n")
+        #     img = x["image_id"]
 
             
-            train_inputs = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="lrv")
-            inputs.append(train_inputs)
-        print("LRV DONE")
-        for x in dvqa:
-            q_tokens = self._tokenizer.tokenize(x["question"], add_eos=False)
-            a_tokens = self._tokenizer.tokenize(x["answer"])
-            img = x["image"]
-            
-            train_inputs = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="dvqa")
-            inputs.append(train_inputs)
-        print("DVQA DONE")
-        print(len(inputs))
-        
-                
-
-
-        # Tokenize each sample
-                
-        
-        # for x in ds:
-        #     q_tokens = self._tokenizer.tokenize(x['question'], add_eos=False)
-        #     a_tokens = self._tokenizer.tokenize(x["answers"][0]["answer"], add_eos=True)
+        #     train_inputs = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="lrv")
+        #     inputs.append(train_inputs)
+        # print("LRV DONE")
+        # for x in dvqa:
+        #     q_tokens = self._tokenizer.tokenize(recurrentgemma.common.apply_it_formatter(x["question"]), add_eos=False)
+        #     a_tokens = self._tokenizer.tokenize(x["answer"]+"<end_of_turn>\n")
         #     img = x["image"]
             
-        #     train_input = self._to_training_input(img,torch.as_tensor(q_tokens, dtype=torch.int32), torch.as_tensor(a_tokens, dtype=torch.int32), set="vizwiz")
-        #     inputs.append(train_input)
+        #     train_inputs = self._to_training_input(image=img, src_tokens=q_tokens, dst_tokens=a_tokens, set="dvqa")
+        #     inputs.append(train_inputs)
+        # print("DVQA DONE")
+        print(f"Number of training examples: {len(inputs)}")
         
-        # Remove the samples which are too long
-        # ds = ds.filter(lambda x: torch.shape(x.input_tokens)[0] <= self._max_seq_len)
+                
 
         # Shuffle the dataset
         np.random.shuffle(inputs)
         # Repeat if necessary
         inputs = inputs * num_epochs
 
-        # Build batches
-        
         inputs = [i for i in inputs if i.input_tokens.shape[-1]<=self._max_seq_len] # Ensure no inputs are too long
         inputs = [inputs[i:i + batch_size] for i in range(0, len(inputs), batch_size)] # Batch inputs
         
@@ -249,8 +234,6 @@ class DatasetBuilder:
             q_tokens = self._tokenizer.tokenize(x['question'], add_eos=False)
             a_tokens = self._tokenizer.tokenize(x["answers"][0]["answer"], add_eos=True)
             img = x["image"]
-            # match = re.search(r'\d+', img)
-            # idx = int(match.group()) if match else None
             
             train_input = self._to_training_input(img, torch.as_tensor(q_tokens, dtype=torch.int32), torch.as_tensor(a_tokens, dtype=torch.int32), set="vizwiz")
             valid.append(train_input)
@@ -271,10 +254,7 @@ class DatasetBuilder:
         
         if set == "llava_it":
             ins = []
-            for idx in range(len(src_tokens)):
-                src_tokens[idx] = [self.START_TOKEN, self.USER_TOKEN] + src_tokens[idx] + [self.END_TOKEN]
-                dst_tokens[idx] = [self.START_TOKEN, self.MODEL_TOKEN] + dst_tokens[idx] + [self.END_TOKEN]
-                
+            for idx in range(len(src_tokens)):                
                 
                 src_tensor = torch.Tensor(src_tokens[idx]).to(torch.int64).to("cpu")
                 dst_tensor = torch.Tensor(dst_tokens[idx]).to(torch.int64).to("cpu")
@@ -288,16 +268,12 @@ class DatasetBuilder:
                 
                 tokens = self._pad_up_to_max_len(tokens, self._tokenizer.pad_id)
                 mask = self._pad_up_to_max_len(mask, False)
-                # ins.append(TrainingInput(image="/lus/eagle/projects/argonne_tpc/jkobza/data/coco/train2014/COCO_train2014_"+image, input_tokens=tokens, target_mask=mask))
                 ins.append(TrainingInput(image="/lus/eagle/projects/argonne_tpc/jkobza/data/coco/train2014/COCO_train2014_"+image, input_tokens=t2j(tokens), target_mask=t2j(mask)))
             return ins
 
         if set == "lvis_it":
             ins = []
             for idx in range(len(src_tokens)):
-                src_tokens[idx] = [self.START_TOKEN, self.USER_TOKEN] + src_tokens[idx] + [self.END_TOKEN]
-                dst_tokens[idx] = [self.START_TOKEN, self.MODEL_TOKEN] + dst_tokens[idx] + [self.END_TOKEN]                
-                
 
                 src_tensor = torch.Tensor(src_tokens[idx]).to(torch.int64).to("cpu")
                 dst_tensor = torch.Tensor(dst_tokens[idx]).to(torch.int64).to("cpu")
@@ -312,13 +288,9 @@ class DatasetBuilder:
                 tokens = self._pad_up_to_max_len(tokens, self._tokenizer.pad_id)
                 mask = self._pad_up_to_max_len(mask, False)
                 ins.append(TrainingInput(image="/lus/eagle/projects/argonne_tpc/jkobza/data/"+image, input_tokens=t2j(tokens), target_mask=t2j(mask)))
-                # ins.append(TrainingInput(image={"lvis_it": int(img_id)}, input_tokens=tokens, target_mask=mask))
             return ins
 
         if set == "lrv":
-            src_tokens = [self.START_TOKEN, self.USER_TOKEN] + src_tokens + [self.END_TOKEN]
-            dst_tokens = [self.START_TOKEN, self.MODEL_TOKEN] + dst_tokens + [self.END_TOKEN]
-            
             
             src_tensor = torch.Tensor(src_tokens).to(torch.int64).to("cpu")
             dst_tensor = torch.Tensor(dst_tokens).to(torch.int64).to("cpu")
@@ -332,13 +304,10 @@ class DatasetBuilder:
             
             tokens = self._pad_up_to_max_len(tokens, self._tokenizer.pad_id)
             mask = self._pad_up_to_max_len(mask, False)
-            # return TrainingInput(image="/lus/eagle/projects/argonne_tpc/jkobza/data/LRV/image/"+image+".jpg", input_tokens=tokens, target_mask=mask)
             return TrainingInput(image="/lus/eagle/projects/argonne_tpc/jkobza/data/LRV/image/"+image+".jpg", input_tokens=t2j(tokens), target_mask=t2j(mask))
 
         if set == "dvqa":
-            src_tokens = [self.START_TOKEN, self.USER_TOKEN] + src_tokens + [self.END_TOKEN]
-            dst_tokens = [self.START_TOKEN, self.MODEL_TOKEN] + dst_tokens + [self.END_TOKEN]            
-            
+                        
             
             src_tensor = torch.Tensor(src_tokens).to(torch.int64).to("cpu")
             dst_tensor = torch.Tensor(dst_tokens).to(torch.int64).to("cpu")
@@ -372,9 +341,6 @@ class DatasetBuilder:
 
             # We don't want to perform the backward on the pad tokens.
             mask = self._pad_up_to_max_len(mask, False)
-            # mask = _tf_to_torch(mask)
-            # Add 1 extra mask for img
-            # mask = torch.cat((mask[:1], torch.Tensor([False]), mask[1:]))
             if("train" in image):
                 return TrainingInput(image="../data/train/train/" + image, input_tokens=t2j(tokens), target_mask=t2j(mask))
             if("val" in image):
@@ -421,11 +387,11 @@ def forward_and_loss_fn(
     )
 
     # Exclude the last step as it does not appear in the targets.
-    logits = logits[0, :-1]
+    logits = logits[:, :-1]
 
-    # Similarly, the first token cannot be predicteds.
-    target_tokens = input_tokens[1:]
-    target_mask = input_mask[1:]
+    # Similarly, the first token cannot be predicted.
+    target_tokens = input_tokens[:, 1:]
+    target_mask = input_mask[:, 1:]
 
     # Convert the target labels into one-hot encoded vectors.
     one_hot = jax.nn.one_hot(target_tokens, logits.shape[-1])
@@ -437,7 +403,7 @@ def forward_and_loss_fn(
     norm_factor = 1 / (jnp.sum(target_mask) + 1e-8)
 
     # Extend one hot for img logits
-    one_hot = jnp.concatenate([jnp.zeros((729, logits.shape[-1]), dtype=jnp.bfloat16), one_hot])
+    one_hot = jnp.concatenate([jnp.zeros((logits.shape[0], 729, logits.shape[-1]), dtype=jnp.bfloat16), one_hot], axis=1)
 
     # Return the nll loss.
     return -jnp.sum(jax.nn.log_softmax(logits) * one_hot) * norm_factor
@@ -472,7 +438,7 @@ def train_step(
     pad_id: int,
     input_tokens: jax.Array,
     input_mask: jax.Array,
-    img_embed: jax.Array
+    img_embed: jax.Array,
     ) -> tuple[jax.Array, Params, optax.OptState]:
     """Train step.
 
@@ -489,6 +455,7 @@ def train_step(
     Returns:
         Training loss, updated parameters, updated optimizer state.
     """
+    
 
     positions = get_positions(input_tokens, pad_id)
 
@@ -501,10 +468,63 @@ def train_step(
         positions=positions,
         image=img_embed
     )
-    # Update the parameters
+    # Update the parameters according to train policy
+
     grads, opt_state = optimizer.update(grads, opt_state, params)
 
     params = optax.apply_updates(params, grads)
+
+    return train_loss, params, opt_state
+
+
+@functools.partial(
+    jax.jit,
+    static_argnames=['model', 'optimizer'],
+    donate_argnames=['params', 'opt_state'],
+)
+def frozen_train_step(
+    model: recurrentgemma.Griffin,
+    params: Params,
+    optimizer: optax.GradientTransformation,
+    opt_state: optax.OptState,
+    pad_id: int,
+    input_tokens: jax.Array,
+    input_mask: jax.Array,
+    img_embed: jax.Array,
+    ) -> tuple[jax.Array, Params, optax.OptState]:
+    """Train step.
+
+    Args:
+        model: gemma transformer model.
+        params: model's input parameters.
+        optimizer: optax optimizer to use.
+        opt_state: input optimizer's state.
+        pad_id: id of the pad token.
+        input_tokens: input text tokens.
+        input_mask: masking for the input tokens.
+        img_embed: image embeddings.
+
+    Returns:
+        Training loss, updated parameters, updated optimizer state.
+    """
+    
+
+    positions = get_positions(input_tokens, pad_id)
+
+    # Forward and backward passes
+    train_loss, grads = jax.value_and_grad(forward_and_loss_fn)(
+        params,
+        model=model,
+        input_tokens=input_tokens,
+        input_mask=input_mask,
+        positions=positions,
+        image=img_embed
+    )
+    # Update the parameters according to train policy
+    grads, opt_state = optimizer.update(grads['vl_connector'], opt_state, params['vl_connector'])
+
+    params['vl_connector'] = optax.apply_updates(params['vl_connector'], grads)
+
 
     return train_loss, params, opt_state
 
@@ -547,7 +567,8 @@ def train_loop(
     model: recurrentgemma.Griffin,
     params: Params,
     dataset_builder: DatasetBuilder,
-    training_cfg: TrainingConfig):
+    training_cfg: TrainingConfig,
+    ):
     if training_cfg.optimizer == 'adamw':
         # For better optimization we use Adam-W.
         optimizer = optax.adamw(
@@ -561,8 +582,10 @@ def train_loop(
         # To save memory, we can use a SGD optimizer instead.
         optimizer = optax.sgd(learning_rate=training_cfg.learning_rate)
 
-    opt_state = jax.jit(optimizer.init)(params)
-
+    if training_cfg.freeze_llm:
+        opt_state = jax.jit(optimizer.init)(params['vl_connector'])
+    else:
+        opt_state = jax.jit(optimizer.init)(params)
     # Build the training dataset
     train_ds = dataset_builder.get_train_dataset(
         batch_size=training_cfg.batch_size, num_epochs=training_cfg.num_epochs
@@ -587,12 +610,15 @@ def train_loop(
     
     vis_enc = VisionEncoder()
     
+    print(train_ds[500][0].input_tokens, train_ds[500][0].image)
+    
     with mlflow.start_run():
         for val_example in validation_ds:
-            torch_emb = torch.squeeze(vis_enc(val_example[0].image))
-            input_tokens = jax.device_put(val_example[0].input_tokens, jax.devices("gpu")[0])
-            target_mask = jax.device_put(val_example[0].target_mask, jax.devices("gpu")[0])
-            img_embed = t2j(torch_emb).astype(jnp.bfloat16)
+            torch_emb = [torch.squeeze(vis_enc(i.image)) for i in val_example]
+            input_tokens = [jax.device_put(i.input_tokens, jax.devices("gpu")[0]) for i in val_example] ## Make dynamic for DDP
+            input_tokens = jnp.stack(input_tokens, axis=0)
+            target_mask = jnp.stack([jax.device_put(i.target_mask, jax.devices("gpu")[0]) for i in val_example], axis=0)
+            img_embed = jnp.stack([t2j(i).astype(jnp.bfloat16) for i in torch_emb], axis=0)
             eval_loss += validation_step(
                 model, params, dataset_builder._tokenizer.pad_id, input_tokens, target_mask, img_embed
             )
@@ -600,20 +626,33 @@ def train_loop(
         print(f"Start, validation loss: {eval_loss/n_steps_eval}")
         mlflow.log_metric("val_loss", eval_loss/n_steps_eval, step=0)
         for train_example in train_ds:
-            torch_emb = torch.squeeze(vis_enc(train_example[0].image))
-            input_tokens = jax.device_put(train_example[0].input_tokens, jax.devices("gpu")[0])
-            target_mask = jax.device_put(train_example[0].target_mask, jax.devices("gpu")[0])
-            img_embed = t2j(torch_emb).astype(jnp.bfloat16)
-            train_loss, params, opt_state = train_step(
-                model=model,
-                params=params,
-                optimizer=optimizer,
-                opt_state=opt_state,
-                pad_id=dataset_builder._tokenizer.pad_id,
-                input_tokens=input_tokens,
-                input_mask=target_mask,
-                img_embed=img_embed
-                )
+            torch_emb = [torch.squeeze(vis_enc(i.image)) for i in train_example]
+            input_tokens = [jax.device_put(i.input_tokens, jax.devices("gpu")[0]) for i in train_example] ## Make dynamic for DDP
+            input_tokens = jnp.stack(input_tokens, axis=0)
+            target_mask =  jnp.stack([jax.device_put(i.target_mask, jax.devices("gpu")[0]) for i in train_example], axis=0)
+            img_embed = jnp.stack([t2j(i).astype(jnp.bfloat16) for i in torch_emb], axis=0)
+            if training_cfg.freeze_llm:
+                train_loss, params, opt_state = frozen_train_step(
+                    model=model,
+                    params=params,
+                    optimizer=optimizer,
+                    opt_state=opt_state,
+                    pad_id=dataset_builder._tokenizer.pad_id,
+                    input_tokens=input_tokens,
+                    input_mask=target_mask,
+                    img_embed=img_embed,
+                    )
+            else:
+                train_loss, params, opt_state = train_step(
+                    model=model,
+                    params=params,
+                    optimizer=optimizer,
+                    opt_state=opt_state,
+                    pad_id=dataset_builder._tokenizer.pad_id,
+                    input_tokens=input_tokens,
+                    input_mask=target_mask,
+                    img_embed=img_embed,
+                    )
             n_steps += 1
             avg_loss += train_loss
             # mlflow.log_metric("train_loss", train_loss, step=n_steps)
@@ -623,10 +662,11 @@ def train_loop(
 
                 n_steps_eval = 0
                 for val_example in validation_ds:
-                    torch_emb = torch.squeeze(vis_enc(val_example[0].image))
-                    input_tokens = jax.device_put(val_example[0].input_tokens, jax.devices("gpu")[0])
-                    target_mask = jax.device_put(val_example[0].target_mask, jax.devices("gpu")[0])
-                    img_embed = t2j(torch_emb).astype(jnp.bfloat16)
+                    torch_emb = [torch.squeeze(vis_enc(i.image)) for i in val_example]
+                    input_tokens = [jax.device_put(i.input_tokens, jax.devices("gpu")[0]) for i in val_example] ## Make dynamic for DDP
+                    input_tokens = jnp.stack(input_tokens, axis=0)
+                    target_mask = jnp.stack([jax.device_put(i.target_mask, jax.devices("gpu")[0]) for i in val_example], axis=0)
+                    img_embed = jnp.stack([t2j(i).astype(jnp.bfloat16) for i in torch_emb], axis=0)
                     eval_loss += validation_step(
                         model, params, dataset_builder._tokenizer.pad_id, input_tokens, target_mask, img_embed
                     )
@@ -643,13 +683,20 @@ def train_loop(
 
 
         
-        
+
 
             
     
     
     
 if __name__ == "__main__":
+    from absl import flags
+    
+    _STEPS = flags.DEFINE_integer(
+    "steps",
+    15_000,
+    help="Number of training steps to run",
+)
     
 
     vocab = spm.SentencePieceProcessor()
@@ -661,43 +708,86 @@ if __name__ == "__main__":
     
     preset = recurrentgemma.Preset.RECURRENT_GEMMA_2B_V1
     
-    params =  recurrentgemma.load_parameters(ckpt_path, "replicated")
+    params =  recurrentgemma.load_parameters(ckpt_path, "single_device")
     
     
     key = jax.random.PRNGKey(0)
-    params['vl_connector'] = {'ffw_up': {'w': jax.random.uniform(key, (1, 2176, 4000), dtype=jnp.bfloat16),'b': jax.random.uniform(key, (1, 1, 1, 4000), dtype=jnp.bfloat16)},
-                              'ffw_down': {'bias': jax.random.uniform(key, (2560,), dtype=jnp.bfloat16), 'kernel': jax.random.uniform(key, (4000, 2560), dtype=jnp.bfloat16)}}
+    up_init = jax.nn.initializers.variance_scaling(
+        scale=1.0,
+        mode="fan_in",
+        distribution="normal",
+        in_axis=[1],
+    )
+    down_init = jax.nn.initializers.variance_scaling(
+        scale=1.0,
+        mode="fan_in",
+        distribution="normal",
+    )
+
+    params['vl_connector'] = {'ffw_up': {'w': up_init(key, (1, 2176, 4000), dtype=jnp.bfloat16),'b': jnp.zeros((1, 1, 1, 4000), dtype=jnp.bfloat16)},
+                              'ffw_down': {'bias': jnp.zeros((2560,), dtype=jnp.bfloat16), 'kernel': down_init(key, (4000, 2560), dtype=jnp.bfloat16)}}
+
     model_config = recurrentgemma.GriffinConfig.from_flax_params_or_variables(params, preset=preset)
     model = recurrentgemma.Griffin(model_config)
-
 
     
     
     SEQ_SIZE = 300
     tokenizer = Tokenizer(vocab)
-    print(tokenizer.tokenize("user"), tokenizer.tokenize("model"), tokenizer.tokenize("<start_of_turn>"), tokenizer.tokenize("<end_of_turn>"), )
+    
+    print(tokenizer.to_string([2, 106, 1645, 108, 1841, 603, 573, 8957, 1154, 575, 573, 2416, 235336, 107, 108, 106, 2516, 108, 2, 651, 8957, 575, 573, 2416, 603, 30619, 235269, 948, 603, 8884, 604, 15494, 152551, 235265, 107, 108, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,]))
+    
     dataset_builder= DatasetBuilder(tokenizer, SEQ_SIZE)
+    frozen_training_cfg = TrainingConfig(
+        optimizer='adamw',
+        learning_rate=1e-5,
+        b2=0.96,
+        num_epochs=1,
+        eval_every_n=20,
+        batch_size=7,
+        max_steps=4_000,
+        freeze_llm=True
+    )
+
     training_cfg = TrainingConfig(
         optimizer='adamw',
         learning_rate=1e-5,
         b2=0.96,
         num_epochs=1,
         eval_every_n=20,
-        batch_size=1,
-        max_steps=15_000,
+        batch_size=7,
+        max_steps=4_000,
+        freeze_llm=False
     )
     
+
     
     mlflow.set_tracking_uri(uri="http://98.214.168.64:5000")
     mlflow.set_experiment("Cadence-Jax-1")
 
-    
+    # jax.debug.breakpoint()
     trained_params = train_loop(
         model=model,
         params=params,
+        dataset_builder=dataset_builder,
+        training_cfg=frozen_training_cfg,
+    )
+    
+    trained_params = train_loop(
+        model=model,
+        params=trained_params,
         dataset_builder=dataset_builder,
         training_cfg=training_cfg,
     )
     
     
     recurrentgemma.utils.save_parameters("/home/jkobza/cadence/cadence-gemma/training/2b-mm", trained_params)
+    
+    ##TODO
+    """
+    2 stage approach has found no noticable difference
+    
+    1. Increase batch size - DONE
+    2. Train for much longer
+    3. Parralellize??
+    """

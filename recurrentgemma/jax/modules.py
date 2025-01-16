@@ -699,7 +699,7 @@ class VisionLanguageConnector(nn.Module):
   final_w_init_variance_scale: float = 1.0
   dtype: at.dtype | None = None
   param_dtype: at.dtype = jnp.float32
-    
+  name = "vl_connector"
   @property
   def out_kernel_init(self) -> nn.initializers.Initializer:
     """Initialization of the kernel for the last layer of the block."""
@@ -714,8 +714,7 @@ class VisionLanguageConnector(nn.Module):
     self.ffw_up = layers.Einsum(
         w_shape=(1, 2176, self.expanded_width),
         b_shape=(1, 1, 1, self.expanded_width),
-        eqn="...td,cdD->c...tD", ## (batch tokens in_dim, channel in_dim exp_dim -> channel batch tokens exp_dim)
-        name="ffw_up",
+        eqn="...td,rdD->r...tD", ## (batch tokens in_dim, channel in_dim exp_dim -> channel batch tokens exp_dim)
         dtype=self.dtype,
         param_dtype=self.param_dtype,
     )
@@ -740,9 +739,9 @@ class VisionLanguageConnector(nn.Module):
     """
     out = self.ffw_up(x)
     out = nn.gelu(out[0])
-    out = self.ffw_down(out[0])
+    out = self.ffw_down(out)
 
-    return jnp.expand_dims(out, 0)
+    return out
 
 
 class ResidualBlock(nn.Module):

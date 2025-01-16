@@ -190,6 +190,7 @@ def validation_step(
         positions = get_positions(example[0].input_tokens, pad_id)
         
         torch_tokens = example[0].input_tokens
+        print(example)
         
         val_loss = forward_and_loss_fn(model=model, input_tokens=torch_tokens, input_mask=example[0].target_mask, positions=positions, image="../data/val/" + example[0].image)
         

@@ -54,6 +54,7 @@ class Griffin(nn.Module):
   gradient_checkpointing: bool = True
   dtype: at.dtype = jnp.bfloat16
   param_dtype: at.dtype = jnp.bfloat16
+  proj_params: dict | None = None
   
 
   def setup(self):
@@ -102,9 +103,13 @@ class Griffin(nn.Module):
         param_dtype=self.param_dtype,
     )
     
+    # self.proj_params = self.projector.init(jax.random.PRNGKey(0), jnp.zeros((1, 729, 2176)))
+  
+    
+    
+    
     # self.projector = modules.VisionLanguageConnector(self.config.width, 4000, 1, self.dtype, self.param_dtype)
-
-
+  
 
   # def _handle_img(self, image, segment_pos):
   #   print(image)
@@ -121,7 +126,8 @@ class Griffin(nn.Module):
     
   #   return x, segment_pos
     
-    
+
+  
   @overload
   def __call__(
       self,
@@ -192,27 +198,28 @@ class Griffin(nn.Module):
     """
     if not return_logits and not return_cache:
       return None, None
-
     input_emb = self.embedder.encode(jnp.array(tokens))
     x = input_emb[None, :, :]
-
     if not image == None:
+      # if self.projector.ffw_up.w == None:
+      #   print("Initializing Projector")
+      #   vars = self.projector.init(jax.random.PRNGKey(0), image)
+      #   print(self.config)
       image = self.projector(image)
       if(len(x.shape) == 4):
         x = jnp.squeeze(x, axis=0)
-        print(x.shape)
-      x = jnp.concatenate((image, x), axis=1)
+        
+      x = jnp.concatenate((x[:, :1], image, x[:, 1:]), axis=1)
+      print(x.shape)
       seg_extended = [
-        jnp.zeros((1, 1), dtype=segment_pos.dtype),
-        jnp.arange(1, 729, dtype=segment_pos.dtype).reshape(1, -1),
-        segment_pos[None, :] + 729 ## Shapes during training vs inference will need to be handled here, unsqueeze for training, squeeze for inference
+        jnp.zeros((x.shape[0], 1), dtype=segment_pos.dtype),
+        jnp.tile(jnp.arange(1, 729, dtype=segment_pos.dtype), (x.shape[0], 1)),
+        segment_pos + 729 
         ]
-      print(segment_pos.shape)
       segment_pos = jnp.concatenate(seg_extended, axis=-1)
-
+      print(seg_extended)
     if(len(x.shape) == 4):
       x = jnp.squeeze(x, axis=0)
-    print(x.shape, segment_pos.shape)
     
       
     new_cache = {}

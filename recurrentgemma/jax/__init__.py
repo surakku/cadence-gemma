@@ -15,6 +15,7 @@
 """Space-Gemma Jax public API."""
 
 from recurrentgemma import common
+from recurrentgemma import conversion
 from recurrentgemma.jax import griffin
 from recurrentgemma.jax import layers
 from recurrentgemma.jax import modules
@@ -22,6 +23,7 @@ from recurrentgemma.jax import sampler
 from recurrentgemma.jax import scan
 from recurrentgemma.jax import utils
 from recurrentgemma.jax import modal_sampler
+
 
 ScanType = common.ScanType
 TemporalBlockType = common.TemporalBlockType
